@@ -18,7 +18,7 @@ class API:
     def user(cls, view):
         def create_response(request):
             response = cls.create_template()
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 response['content'] = view(request)
                 response['is_authenticated'] = True
             else:
