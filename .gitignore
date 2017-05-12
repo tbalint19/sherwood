@@ -1,0 +1,5 @@
+sherwood
+__pycache__
+migrations
+node_modules
+config.json
