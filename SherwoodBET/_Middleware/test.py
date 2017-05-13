@@ -77,3 +77,15 @@ class APP_Test(TestCase):
             username='x', email='x@x.hu', password='123456Xy')
         self.admin = User.objects.create_user(
             username='y', email='y@y.hu', password='123456xY', is_superuser=True)
+
+    def test_entry_app_without_user(self):
+        request = self.factory.get('/testroute')
+        request.user = AnonymousUser()
+        response = APP.entry(lambda request: {'public': "login", 'protected': "wall"})(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_entry_app_with_user(self):
+        request = self.factory.get('/testroute')
+        request.user = self.user
+        response = APP.entry(lambda request: {'public': "login", 'protected': "wall"})(request)
+        self.assertEqual(response.status_code, 200)
