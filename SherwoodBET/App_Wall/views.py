@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from _Middleware import APP, API
 
-# Create your views here.
+@APP.entry
+def get_home(request):
+    return {'public': "login", 'protected': "wall"}

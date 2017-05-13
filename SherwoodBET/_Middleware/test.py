@@ -1,14 +1,16 @@
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
-from _Middleware.api import API
+from _Middleware import API, APP
 import json
 
 class API_Test(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.user = User.objects.create_user(username='bela', email='bela@x.hu', password='123456Bela')
-        self.admin = User.objects.create_user(username='lajos', email='lajos@x.hu', password='123456Lajos', is_superuser=True)
+        self.user = User.objects.create_user(
+            username='x', email='x@x.hu', password='123456Xy')
+        self.admin = User.objects.create_user(
+            username='y', email='y@y.hu', password='123456xY', is_superuser=True)
         self.view = lambda request: "content"
 
     def test_public_api_with_user(self):
@@ -66,3 +68,12 @@ class API_Test(TestCase):
         json_response = json.loads(response.content.decode('utf-8'))
         self.assertEqual(json_response['content'], 'content')
         self.assertEqual(json_response['is_authenticated'], True)
+
+class APP_Test(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='x', email='x@x.hu', password='123456Xy')
+        self.admin = User.objects.create_user(
+            username='y', email='y@y.hu', password='123456xY', is_superuser=True)
