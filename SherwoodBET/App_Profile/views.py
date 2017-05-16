@@ -1,21 +1,19 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from App_Profile.models import Profile, Account
-from App_Profile.validators import SignupRequestValidator
+from App_Profile.request_models import SignupRequest, LoginRequest
 from _Middleware import API
 import json
 
-@API.public
+@API.public(expected=SignupRequest)
 def signup_user(request):
-    user_data = SignupRequestValidator().validate(request)
-    if not user_data:
-        return None
+    user_data = json.loads(request.body.decode('utf-8'))
     errors = Profile.objects.check_if_possible(user_data['username'], user_data['email'])
     if not errors:
         Profile.objects.create_profile(user_data['username'], user_data['email'], user_data['password'])
     return {'errors': errors}
 
-@API.public
+@API.public(expected=LoginRequest)
 def login_user(request):
     user_data = json.loads(request.body.decode('utf-8'))
     password = user_data["password"]

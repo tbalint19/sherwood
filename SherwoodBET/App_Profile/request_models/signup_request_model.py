@@ -1,7 +1,7 @@
 import json
 import string
 
-class SignupRequestValidator:
+class SignupRequest:
 
     def __init__(self):
         self.user_data = None
@@ -10,7 +10,7 @@ class SignupRequestValidator:
         self.email_domain_chars = string.ascii_lowercase + "."
         self.password_chars = string.ascii_letters + string.digits + "_" + "@" + "-" + "&" + "/" + "*"
 
-    def validate(self, request):
+    def get_from_request(self, request):
         try:
             method_is_valid = self.check_method(request)
             self.parse(request)

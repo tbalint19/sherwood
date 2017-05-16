@@ -1,1 +1,0 @@
-from App_Profile.validators.signup_validator import SignupRequestValidator
