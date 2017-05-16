@@ -9,11 +9,10 @@ import json
 def signup_user(request):
     user_data = SignupRequestValidator().validate(request)
     if not user_data:
-        return {'errors': []}
-    username, email, password = user_data['username'], Profile.cleanse_email(user_data['email']), user_data['password']
-    errors = Profile.objects.check_if_possible(username, email)
+        return None
+    errors = Profile.objects.check_if_possible(user_data['username'], user_data['email'])
     if not errors:
-        Profile.objects.create_profile(username, email, password)
+        Profile.objects.create_profile(user_data['username'], user_data['email'], user_data['password'])
     return {'errors': errors}
 
 @API.public

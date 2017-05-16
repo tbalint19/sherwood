@@ -2,12 +2,12 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import reverse
 from App_Profile.models import Profile, Account
-from . import views
+from App_Profile import views
 import json
 
 class SignupDataFactory:
 
-    def json(self, username="NewUser1", email="new@user1.com", password="12345Ab", missing=None):
+    def json(self, username="NewUser1", email="new@user.com", password="12345Ab", missing=None):
         data = {'username': username, 'email': email, 'password': password}
         if missing is not None:
             del data[missing]
@@ -77,101 +77,58 @@ class Signup_test(TestCase):
     def test_invalid_signup_data_username_missing(self):
         response = self.user.post(self.factory.json(missing='username'))
         self.assertFalse(User.objects.filter(email="new@user1.hu").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_invalid_signup_data_email_missing(self):
         response = self.user.post(self.factory.json(missing='email'))
         self.assertFalse(User.objects.filter(username="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_invalid_signup_data_password_missing(self):
         response = self.user.post(self.factory.json(missing='password'))
         self.assertFalse(User.objects.filter(email="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_short_username(self):
         response = self.user.post(self.factory.json(username='only6c'))
         self.assertFalse(User.objects.filter(username="only6c").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_short_email(self):
         response = self.user.post(self.factory.json(email='A1@2.3'))
         self.assertFalse(User.objects.filter(email="1@2.3").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_short_password(self):
         response = self.user.post(self.factory.json(password='only6c'))
         self.assertFalse(User.objects.filter(username="KovacsBela").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_long_username(self):
         response = self.user.post(self.factory.json(username=''.join(["B" for x in range(51)])))
         self.assertFalse(User.objects.filter(email="new@user1.hu").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_long_email(self):
         response = self.user.post(self.factory.json(username=''.join(["B" for x in range(46)]) + "@x.hu"))
         self.assertFalse(User.objects.filter(username="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_long_password(self):
         response = self.user.post(self.factory.json(password=''.join(["B" for x in range(51)])))
         self.assertFalse(User.objects.filter(username="KovacsBela").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_invalid_email(self):
         response = self.user.post(self.factory.json(email="onlychar"))
-        errors = json.loads(response.content.decode('utf-8'))['content']['errors']
         self.assertFalse(User.objects.filter(email="onlychar").exists())
-        self.assertEqual(errors, [])
+        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
 
     def test_signup_with_upper_domain_email(self):
         self.user.post(self.factory.json(email="with@upper.com"))
         response = self.user.post(self.factory.json(email="with@UPPER.com", username="NewUser2"))
-        errors = json.loads(response.content.decode('utf-8'))['content']['errors']
         self.assertFalse(User.objects.filter(email="with@UPPER.com").exists())
         self.assertTrue(User.objects.filter(email="with@upper.com").exists())
         self.assertEqual(len(User.objects.filter(username="NewUser1")), 1)
         self.assertEqual(len(User.objects.filter(username="NewUser2")), 0)
         self.assertEqual(len(User.objects.filter(email="with@upper.com")), 1)
-
-class LoginDataFactory:
-
-    def json(self, username="DefaultInDB", email="Default@indb.hu", password="12345Ab", missing=None, credential="username"):
-        data = {'password': password}
-        data[credential] = vars()[credential]
-        if missing is not None:
-            del data[missing]
-        return json.dumps(data)
-
-class LoginTestUser:
-
-    def __init__(self, client):
-        self.client = client
-
-    def post(self, data):
-        return self.client.post(reverse('login_user'), data, content_type='application/json')
-
-class Login_test(TestCase):
-
-    def setUp(self):
-        self.user = LoginTestUser(self.client)
-        self.factory = LoginDataFactory()
-        self.user_in_db = User.objects.create_user(
-            username='DefaultInDB', email='Default@indb.hu', password='12345Ab')
-
-    def test_sunny_day_login(self):
-        data = self.factory.json()
-        response = self.user.post(data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'is_successful': True})
-
-    def test_wrong_password(self):
-        data = self.factory.json(password="54321Ab")
-        response = self.user.post(data)
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'is_successful': False})
-
-    def test_sunny_day_login_email(self):
-        data = self.factory.json(credential="email")
-        response = self.user.post(data)
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'is_successful': True})

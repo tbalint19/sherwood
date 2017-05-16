@@ -32,12 +32,6 @@ class Profile(models.Model):
         self.confirmation_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(25))
         return self
 
-    staticmethod
-    def cleanse_email(email):
-        email_name = email.split("@")[0]
-        email_domain = email.split("@")[1]
-        return email_name + "@" + email_domain.lower()
-
 class Account(models.Model):
 
     user_obj = models.OneToOneField(User, on_delete=models.CASCADE)
