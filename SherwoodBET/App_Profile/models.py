@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.db import models
 import random
 import string
 
@@ -16,6 +17,14 @@ class ProfileManager(models.Manager):
         return list(filter(None, [
             "username" if self.filter(user_obj__username=username).exists() else None,
             "email" if self.filter(user_obj__email=email).exists() else None]))
+
+    def authenticate_user(self, request, credential, password):
+        if "@" in credential:
+            if self.filter(user_obj__email=credential).exists():
+                username = self.get(user_obj__email=credential).user_obj.username
+                return authenticate(request, username=username, password=password)
+            return None
+        return authenticate(request, username=credential, password=password)
 
 class Profile(models.Model):
 
