@@ -3,5 +3,8 @@ import string
 
 class LoginRequest:
 
+    auth_status = "public"
+    request_method = "post"
+
     def get_from_request(self, request):
-        return json.loads(request.body.decode('utf-8'))
+        return request

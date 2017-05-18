@@ -3,6 +3,9 @@ import string
 
 class SignupRequest:
 
+    auth_status = "public"
+    request_method = "post"
+
     def __init__(self):
         self.user_data = None
         self.username_chars = string.ascii_letters + string.digits + "_"

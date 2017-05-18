@@ -77,52 +77,52 @@ class Signup_test(TestCase):
     def test_invalid_signup_data_username_missing(self):
         response = self.user.post(self.factory.json(missing='username'))
         self.assertFalse(User.objects.filter(email="new@user1.hu").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_invalid_signup_data_email_missing(self):
         response = self.user.post(self.factory.json(missing='email'))
         self.assertFalse(User.objects.filter(username="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_invalid_signup_data_password_missing(self):
         response = self.user.post(self.factory.json(missing='password'))
         self.assertFalse(User.objects.filter(email="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_short_username(self):
         response = self.user.post(self.factory.json(username='only6c'))
         self.assertFalse(User.objects.filter(username="only6c").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_short_email(self):
         response = self.user.post(self.factory.json(email='A1@2.3'))
         self.assertFalse(User.objects.filter(email="1@2.3").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_short_password(self):
         response = self.user.post(self.factory.json(password='only6c'))
         self.assertFalse(User.objects.filter(username="KovacsBela").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_long_username(self):
         response = self.user.post(self.factory.json(username=''.join(["B" for x in range(51)])))
         self.assertFalse(User.objects.filter(email="new@user1.hu").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_long_email(self):
         response = self.user.post(self.factory.json(username=''.join(["B" for x in range(46)]) + "@x.hu"))
         self.assertFalse(User.objects.filter(username="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_long_password(self):
         response = self.user.post(self.factory.json(password=''.join(["B" for x in range(51)])))
         self.assertFalse(User.objects.filter(username="KovacsBela").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_invalid_email(self):
         response = self.user.post(self.factory.json(email="onlychar"))
         self.assertFalse(User.objects.filter(email="onlychar").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], None)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {})
 
     def test_signup_with_upper_domain_email(self):
         self.user.post(self.factory.json(email="with@upper.com"))
