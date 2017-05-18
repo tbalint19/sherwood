@@ -35,21 +35,21 @@ class Signup_test(TestCase):
     def test_signup_sunnyday(self):
         response = self.user.post(self.factory.json())
         self.assertTrue(User.objects.filter(username="NewUser1").exists())
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': []})
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': []})
 
     def test_signup_same_username(self):
         response = self.user.post(self.factory.json(username="DefaultInDB"))
         self.assertEqual(len(User.objects.filter(username="DefaultInDB")), 1)
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': ["username"]})
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': ["username"]})
 
     def test_signup_same_email(self):
         response = self.user.post(self.factory.json(email="Default@indb.hu"))
         self.assertEqual(len(User.objects.filter(email="Default@indb.hu")), 1)
-        self.assertEqual(json.loads(response.content.decode('utf-8'))['content'], {'errors': ["email"]})
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': ["email"]})
 
     def test_signup_same_credentials(self):
         response = self.user.post(self.factory.json(username="DefaultInDB", email="Default@indb.hu"))
-        errors = json.loads(response.content.decode('utf-8'))['content']['errors']
+        errors = json.loads(response.content.decode('utf-8'))['errors']
         self.assertTrue("username" in errors and "email" in errors)
 
     def test_user_extensions_created(self):
