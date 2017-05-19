@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
+from _Serializer.serializer import Serializer as S
 
 class Team(models.Model):
 
@@ -42,6 +43,18 @@ class MatchEvent(models.Model):
     def __str__(self):
         return str(self.match_obj) + " / " + str(self.event_obj)
 
+class CollectionManager(models.Manager):
+
+    def get_offer(self, is_deep_analysis):
+        offer = [
+            {"collection": S.serialize(collection), "match_events": [{
+            "match": S.serialize(obj.match_event_obj.match_obj),
+            "event": S.serialize(obj.match_event_obj.event_obj)}
+            for obj in collection.match_events.all()],
+            "race_tickets": [S.serialize(race_ticket) for race_ticket in collection.race_tickets.all()]}
+            for collection in self.filter(playable=True, deep_analysis=is_deep_analysis)]
+        return offer
+
 class Collection(models.Model):
 
     number = models.IntegerField(primary_key=True)
@@ -52,6 +65,8 @@ class Collection(models.Model):
     live = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     deep_analysis = models.BooleanField(default=False)
+
+    objects = CollectionManager()
 
     def __str__(self):
         return "#" + str(self.number) + ": " + self.title
@@ -74,6 +89,14 @@ class RaceTicket(models.Model):
     def __str__(self):
         return str(self.collection_obj) + " / " + str(self.bet_amount)
 
+class UserTicketManager(models.Manager):
+
+    def get_played_race_tickets(self, user):
+        if user == AnonymousUser():
+            return []
+        user_tickets_in_play = self.filter(user_obj=user, paid=True, live=False, finished=False)
+        return [S.serialize(user_ticket.race_ticket_obj) for user_ticket in user_tickets_in_play]
+
 class UserTicket(models.Model):
 
     race_ticket_obj = models.ForeignKey(RaceTicket, on_delete=models.CASCADE, related_name='user_tickets')
@@ -84,6 +107,8 @@ class UserTicket(models.Model):
     paid = models.BooleanField(default=False)
     live = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
+
+    objects = UserTicketManager()
 
     def __str__(self):
         return self.user_obj.username + "'s " + str(self.race_ticket_obj)
