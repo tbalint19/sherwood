@@ -7,6 +7,7 @@ class TeamTest(TestCase):
         pass
 
     def test_iterator(self):
-        team = Team(name="F.C. Barcelona", short_name="FC Barca", stadium="Camp Nou").save()
-        data = {'id': team.id,'name': "F.C. Barcelona", 'short_name': "FC Barca", 'stadium': "Camp Nou"}
-        self.asserEqual(data, dict(team))
+        Team(name="F.C. Barcelona", short_name="FC Barca", stadium="Camp Nou").save()
+        team = Team.objects.get(short_name="FC Barca")
+        data = {'name': "F.C. Barcelona", 'short_name': "FC Barca", 'stadium': "Camp Nou", 'id': 1}
+        self.assertEquals(data, dict(team))

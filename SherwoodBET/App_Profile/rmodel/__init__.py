@@ -1,3 +1,3 @@
-from App_Profile.request_models.signup_request_model import SignupRequest
-from App_Profile.request_models.login_request_model import LoginRequest
-from App_Profile.request_models.logout_request_model import LogoutRequest
+from App_Profile.rmodel.signup_request_model import SignupRequest
+from App_Profile.rmodel.login_request_model import LoginRequest
+from App_Profile.rmodel.logout_request_model import LogoutRequest
