@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from App_Game.rmodel import OfferRequest
+from App_Game.requests import OfferRequest
 from App_Game.models import Collection, UserTicket
-from _Serializer.serializer import Serializer as S
 from _Middleware import API
 
 @API.endpoint(OfferRequest)

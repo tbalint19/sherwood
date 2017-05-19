@@ -1,1 +1,0 @@
-from App_Game.rmodel.offer_request_model import OfferRequest

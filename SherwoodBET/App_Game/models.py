@@ -46,14 +46,13 @@ class MatchEvent(models.Model):
 class CollectionManager(models.Manager):
 
     def get_offer(self, is_deep_analysis):
-        offer = [
+        return [
             {"collection": S.serialize(collection), "match_events": [{
             "match": S.serialize(obj.match_event_obj.match_obj),
             "event": S.serialize(obj.match_event_obj.event_obj)}
             for obj in collection.match_events.all()],
             "race_tickets": [S.serialize(race_ticket) for race_ticket in collection.race_tickets.all()]}
             for collection in self.filter(playable=True, deep_analysis=is_deep_analysis)]
-        return offer
 
 class Collection(models.Model):
 
@@ -92,10 +91,10 @@ class RaceTicket(models.Model):
 class UserTicketManager(models.Manager):
 
     def get_played_race_tickets(self, user):
-        if user == AnonymousUser():
-            return []
-        user_tickets_in_play = self.filter(user_obj=user, paid=True, live=False, finished=False)
-        return [S.serialize(user_ticket.race_ticket_obj) for user_ticket in user_tickets_in_play]
+        return [
+            S.serialize(user_ticket.race_ticket_obj)
+            for user_ticket in self.filter(
+            user_obj=None if user == AnonymousUser() else user, paid=True, live=False, finished=False)]
 
 class UserTicket(models.Model):
 
