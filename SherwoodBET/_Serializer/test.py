@@ -1,6 +1,7 @@
 from django.test import TestCase
 from _Serializer.serializer import Serializer as S
-from App_Game.models import Team, Match, Event, MatchEvent, Collection, MatchEventOfCollection, RaceTicket
+from App_Profile.models import Profile
+from App_Game.models import Team, Match, Event, MatchEvent, Collection, MatchEventOfCollection, RaceTicket, UserTicket, Bet
 from datetime import datetime
 
 class SerializerTest(TestCase):
@@ -17,6 +18,10 @@ class SerializerTest(TestCase):
             match_event_obj=self.barca_real_final_result, collection_obj=self.PD15_collection)
         self.PD15_collection_with_1_euro = RaceTicket(
             collection_obj=self.PD15_collection, is_professional=True, bet_amount=1)
+        self.player = Profile.objects.create_profile("Kazmer12", "kaz@mer.hu", '123456Kazmer')
+        self.user_ticket_of_kazmer = UserTicket(race_ticket_obj=self.PD15_collection_with_1_euro, user_obj=self.player)
+        self.bet_on_barca_real_from_kazmer = Bet(
+            match_event_obj=self.barca_real_final_result, user_ticket_obj=self.user_ticket_of_kazmer)
 
     def test_serialize_team(self):
         data = {'name': "F.C. Barcelona", 'short_name': "FC Barca", 'stadium': "Camp Nou", 'id': self.barca.id}
@@ -55,4 +60,22 @@ class SerializerTest(TestCase):
         data = {'collection': '#171819: PD 15th round', 'id': None,
             'is_professional': True, 'bet_amount': 1, 'number_of_competitors': 0}
         serialized = S.serialize(self.PD15_collection_with_1_euro)
+        self.assertEquals(data, serialized)
+
+    def test_serialize_user_ticket(self):
+        data = {'finished': False, 'id': None, 'live': False, 'paid': False, 'payoff': None, 'points': 1,
+            'race_ticket': '#171819: PD 15th round / 1', 'rank': None, 'user': 'Kazmer12'}
+        serialized = S.serialize(self.user_ticket_of_kazmer)
+        self.assertEquals(data, serialized)
+
+    def test_serialize_user_ticket(self):
+        data = {'finished': False, 'id': None, 'live': False, 'paid': False, 'payoff': None, 'points': 1,
+            'race_ticket': '#171819: PD 15th round / 1', 'rank': None, 'user': 'Kazmer12'}
+        serialized = S.serialize(self.user_ticket_of_kazmer)
+        self.assertEquals(data, serialized)
+
+    def test_serialize_bet(self):
+        data = {'away': 0, 'draw': 0, 'home': 0, 'id': None, 'match_event': 'FC Barca - R Madrid / Final result',
+            'result': 1, 'user_ticket': "Kazmer12's #171819: PD 15th round / 1"}
+        serialized = S.serialize(self.bet_on_barca_real_from_kazmer)
         self.assertEquals(data, serialized)

@@ -73,3 +73,29 @@ class RaceTicket(models.Model):
 
     def __str__(self):
         return str(self.collection_obj) + " / " + str(self.bet_amount)
+
+class UserTicket(models.Model):
+
+    race_ticket_obj = models.ForeignKey(RaceTicket, on_delete=models.CASCADE, related_name='user_tickets')
+    user_obj = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.BigIntegerField(default=1)
+    rank = models.IntegerField(null=True, blank=True, default=None)
+    payoff = models.FloatField(null=True, blank=True, default=None)
+    paid = models.BooleanField(default=False)
+    live = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user_obj.username + "'s " + str(self.race_ticket_obj)
+
+class Bet(models.Model):
+
+    match_event_obj = models.ForeignKey(MatchEvent, on_delete=models.CASCADE)
+    user_ticket_obj = models.ForeignKey(UserTicket, on_delete=models.CASCADE, related_name='bets')
+    home = models.IntegerField(default=0)
+    draw = models.IntegerField(default=0)
+    away = models.IntegerField(default=0)
+    result = models.IntegerField(default=1)
+
+    def __str__(self):
+        return str(self.user_ticket_obj) + " - " + str(self.match_event_obj)
