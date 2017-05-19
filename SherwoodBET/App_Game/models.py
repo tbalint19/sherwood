@@ -55,3 +55,21 @@ class Collection(models.Model):
 
     def __str__(self):
         return "#" + str(self.number) + ": " + self.title
+
+class MatchEventOfCollection(models.Model):
+
+    collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='match_events')
+    match_event_obj = models.ForeignKey(MatchEvent, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.match_event_obj) + " of " + str(self.collection_obj)
+
+class RaceTicket(models.Model):
+
+    collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='race_tickets')
+    is_professional = models.BooleanField()
+    bet_amount = models.IntegerField()
+    number_of_competitors = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.collection_obj) + " / " + str(self.bet_amount)
