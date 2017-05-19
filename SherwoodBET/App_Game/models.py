@@ -24,3 +24,10 @@ class Match(models.Model):
 
     def __str__(self):
         return str(self.home_team_obj) + " - " + str(self.away_team_obj)
+
+class Event(models.Model):
+
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name

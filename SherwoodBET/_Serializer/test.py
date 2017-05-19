@@ -1,6 +1,6 @@
 from django.test import TestCase
 from _Serializer.serializer import Serializer as S
-from App_Game.models import Team, Match
+from App_Game.models import Team, Match, Event
 from datetime import datetime
 
 class SerializerTest(TestCase):
@@ -20,7 +20,14 @@ class SerializerTest(TestCase):
         deadline = datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p')
         match = Match(home_team_obj=home_team, away_team_obj=away_team, deadline=deadline)
         match.save()
-        data = {'away_team': 'R Madrid', 'deadline': '2005-06-01T13:33:00', 'home_team': 'FC Barca', 'id': 1,
+        data = {'away_team': 'R Madrid', 'deadline': '2005-06-01T13:33:00', 'home_team': 'FC Barca', 'id': match.id,
             'league': 'Friendly', 'link': '', 'live': False, 'over': False, 'round': '', 'upcoming': True}
         serialized = S.serialize(match)
+        self.assertEquals(data, serialized)
+
+    def test_serialize_event(self):
+        event = Event(name="Final result")
+        event.save()
+        data = {'name': "Final result", 'id': event.id}
+        serialized = S.serialize(event)
         self.assertEquals(data, serialized)
