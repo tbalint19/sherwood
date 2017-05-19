@@ -1,12 +1,14 @@
 from django.test import TestCase
 from _Serializer.serializer import Serializer as S
-from App_Profile.models import Profile
+from django.contrib.auth.models import User
+from App_Profile.models import Profile, Account
 from App_Game.models import Team, Match, Event, MatchEvent, Collection, MatchEventOfCollection, RaceTicket, UserTicket, Bet
 from datetime import datetime
 
 class SerializerTest(TestCase):
 
     def setUp(self):
+        self.player = Profile.objects.create_profile("Kazmer12", "kaz@mer.hu", '123456Kazmer')
         self.barca = Team(name="F.C. Barcelona", short_name="FC Barca", stadium="Camp Nou")
         self.rmadird = Team(name="Real Madrid C.F.", short_name="R Madrid", stadium="Bernabeu")
         deadline = datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p')
@@ -18,10 +20,26 @@ class SerializerTest(TestCase):
             match_event_obj=self.barca_real_final_result, collection_obj=self.PD15_collection)
         self.PD15_collection_with_1_euro = RaceTicket(
             collection_obj=self.PD15_collection, is_professional=True, bet_amount=1)
-        self.player = Profile.objects.create_profile("Kazmer12", "kaz@mer.hu", '123456Kazmer')
         self.user_ticket_of_kazmer = UserTicket(race_ticket_obj=self.PD15_collection_with_1_euro, user_obj=self.player)
         self.bet_on_barca_real_from_kazmer = Bet(
             match_event_obj=self.barca_real_final_result, user_ticket_obj=self.user_ticket_of_kazmer)
+
+    def test_serialize_user(self):
+        data = {'username': "Kazmer12", 'email': "kaz@mer.hu"}
+        serialized = S.serialize(self.player)
+        self.assertEquals(data['username'], serialized['username'])
+        self.assertEquals(data['email'], serialized['email'])
+
+    def test_serialize_profile(self):
+        data = {'annual_points': 0, 'confirmation_code': self.player.profile.confirmation_code,
+            'id': self.player.profile.id, 'is_confirmed': False, 'monthly_points': 0, 'rank': 'newbie', 'user': 'Kazmer12'}
+        serialized = S.serialize(self.player.profile)
+        self.assertEquals(data, serialized)
+
+    def test_serialize_account(self):
+        data = {'game_money': 1000, 'real_money': 0, 'id': self.player.account.id, 'user': "Kazmer12"}
+        serialized = S.serialize(self.player.account)
+        self.assertEquals(data, serialized)
 
     def test_serialize_team(self):
         data = {'name': "F.C. Barcelona", 'short_name': "FC Barca", 'stadium': "Camp Nou", 'id': self.barca.id}
