@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'App_Wall.apps.AppWallConfig',
     'App_Profile.apps.AppProfileConfig',
+    'App_Game.apps.AppGameConfig',
 ]
 
 MIDDLEWARE = [
