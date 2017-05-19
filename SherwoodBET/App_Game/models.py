@@ -31,3 +31,27 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+class MatchEvent(models.Model):
+
+    match_obj = models.ForeignKey(Match, on_delete=models.CASCADE)
+    event_obj = models.ForeignKey(Event, on_delete=models.CASCADE)
+    result = models.CharField(max_length=5, blank=True, null=True)
+    details = models.CharField(max_length=5, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.match_obj) + " / " + str(self.event_obj)
+
+class Collection(models.Model):
+
+    number = models.IntegerField(primary_key=True)
+    title = models.CharField(max_length=30)
+    intro = models.CharField(max_length= 300)
+    hidden = models.BooleanField(default=True)
+    playable = models.BooleanField(default=False)
+    live = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
+    deep_analysis = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "#" + str(self.number) + ": " + self.title
