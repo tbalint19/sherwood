@@ -35,8 +35,8 @@ class Event(models.Model):
 
 class MatchEvent(models.Model):
 
-    match_obj = models.ForeignKey(Match, on_delete=models.CASCADE)
-    event_obj = models.ForeignKey(Event, on_delete=models.CASCADE)
+    match_obj = models.ForeignKey(Match, on_delete=models.CASCADE, related_name="match_events")
+    event_obj = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="match_events")
     result = models.CharField(max_length=5, blank=True, null=True)
     details = models.CharField(max_length=5, blank=True, null=True)
 
