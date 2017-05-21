@@ -62,28 +62,37 @@ class MatchEventFactory:
 
 class CollectionFactory:
 
-    def create_collections(self, matches, events):
+    def create_match_collections(self, matches, events):
         title = "title-of-match-number-"
         intro = "intro-of-match-number-"
         collections = []
         for index, match in enumerate(matches):
             collection = Collection(number=1710100+index, title=title+str(index), intro=intro+str(index))
-            collection.save()
             for match_event in match.match_events.all():
                 match_event_of_collection = MatchEventOfCollection(collection_obj=collection, match_event_obj=match_event)
                 match_event_of_collection.save()
+            collection.deep_analysis = True
+            collection.hidden = False
+            collection.playable = True
             collections.append(collection)
+            collection.save()
+        return collections
+
+    def create_matches_collections(self):
         title = "title-of-league-number-"
         intro = "intro-of-league-number-"
-        all_matches = matches[:-len(matches)%7]
-        matches_of_collections = [match[i:i+7] for i in range(0, len(all_matches), 7)]
-        for matches_of_collection in enumerate(matches_of_collections):
+        match_events = MatchEvent.objects.filter(event_obj__name="Final result")
+        match_events_of_collections = [match_events[i:i+7] for i in range(0, len(match_events), 7)]
+        collections = []
+        for index, match_events_of_collection in enumerate(match_events_of_collections):
             collection = Collection(number=1710200+index, title=title+str(index), intro=intro+str(index))
-            for match in matches_of_collection:
-                match_event = match_event.get(match_obj=match, event_obj__name="Final result")
+            for match_event in match_events_of_collection:
                 match_event_of_collection = MatchEventOfCollection(collection_obj=collection, match_event_obj=match_event)
                 match_event_of_collection.save()
+            collection.hidden = False
+            collection.playable = True
             collections.append(collection)
+            collection.save()
         return collections
 
 class RaceTicketFactory:

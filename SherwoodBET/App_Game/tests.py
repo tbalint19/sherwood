@@ -4,23 +4,50 @@ from django.contrib.auth.models import AnonymousUser, User
 from App_Profile.models import Profile
 from App_Game.views import get_offer
 from App_Game.factories import TeamFactory, MatchFactory, EventFactory, MatchEventFactory, CollectionFactory, RaceTicketFactory
-from App_Game.models import Team, Event, Match
+from App_Game.models import Team, Event, Match, MatchEvent, Collection
 import json
 
 class FactoryTest(TestCase):
 
     def test_team_factory(self):
         TeamFactory().create_teams(14)
-        self.assertEqual(len(Team.objects.all()), 14)
+        team_names = set([str(team) for team in Team.objects.all()])
+        self.assertEqual(len(team_names), 14)
 
     def test_event_factory(self):
         EventFactory().create_events()
-        self.assertEqual(len(Event.objects.all()), 7)
+        event_names = set([str(event) for event in Event.objects.all()])
+        self.assertEqual(len(event_names), 7)
 
     def test_match_factory(self):
         teams = TeamFactory().create_teams(20)
         MatchFactory().create_matches(teams)
-        self.assertEqual(len(Match.objects.all()), 10)
+        matches = set([str(match) for match in Match.objects.all()])
+        self.assertEqual(len(matches), 10)
+
+    def test_match_event_factory(self):
+        teams = TeamFactory().create_teams(20)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        match_events = set([str(match_event) for match_event in MatchEvent.objects.all()])
+        self.assertEqual(len(match_events), 70)
+
+    def test_collection_factory_one_match(self):
+        teams = TeamFactory().create_teams(14)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        CollectionFactory().create_match_collections(matches, events)
+        self.assertEqual(len(Collection.objects.all()), 7)
+
+    def test_collection_factory_many_matches(self):
+        teams = TeamFactory().create_teams(28)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        CollectionFactory().create_matches_collections()
+        self.assertEqual(len(Collection.objects.all()), 2)
 
 class OfferTest(TestCase):
 
