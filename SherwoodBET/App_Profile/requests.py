@@ -76,3 +76,19 @@ class SignupRequest:
             if letter not in self.password_chars:
                 return False
         return True
+
+class LoginRequest:
+
+    auth_status = "public"
+    request_method = "post"
+
+    def get_from_request(self, request):
+        return request
+
+class LogoutRequest:
+
+    auth_status = "user"
+    request_method = "get"
+
+    def get_from_request(self, request):
+        return request
