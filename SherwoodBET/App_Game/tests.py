@@ -49,6 +49,16 @@ class FactoryTest(TestCase):
         CollectionFactory().create_matches_collections()
         self.assertEqual(len(Collection.objects.all()), 2)
 
+    def test_race_ticket_factory(self):
+        teams = TeamFactory().create_teams(28)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        matches_collections = CollectionFactory().create_matches_collections()
+        match_collections = CollectionFactory().create_match_collections(matches, events)
+        RaceTicketFactory().create_race_tickets(match_collections + matches_collections)
+        self.assertEqual(len(Collection.objects.all()), 16)
+
 class OfferTest(TestCase):
 
     def setUp(self):
