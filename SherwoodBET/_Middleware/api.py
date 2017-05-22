@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from _Serializer.serializer import Serializer as S
 import json
 
 class API:
@@ -11,7 +12,7 @@ class API:
                 if not arg:
                     return JsonResponse({}, status=403)
                 if cls.is_authenticated(request, Expected.auth_status):
-                    return JsonResponse(view(arg))
+                    return JsonResponse(S.serialize(view(arg)))
                 return JsonResponse({}, status=401)
             return create_response
         return validate

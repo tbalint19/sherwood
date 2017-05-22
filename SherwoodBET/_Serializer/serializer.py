@@ -6,11 +6,11 @@ class Serializer:
     @classmethod
     def serialize(cls, obj):
         if type(obj) is list:
-            return [S.serialize(elem) for elem in obj]
+            return [cls.serialize(elem) for elem in obj]
         if type(obj) is dict:
             serialized = {}
             for key in obj:
-                serialized[key] = S.serialize(obj[key])
+                serialized[key] = cls.serialize(obj[key])
             return serialized
         if type(obj) in cls.serialized:
             return obj
