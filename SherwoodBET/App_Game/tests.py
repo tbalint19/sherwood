@@ -69,62 +69,94 @@ class OfferTestSunnyDayNoUser(TestCase):
         events = EventFactory().create_events()
         matches = MatchFactory().create_matches(teams)
         MatchEventFactory().create_match_events(matches, events)
-        matches_collections = CollectionFactory().create_matches_collections()
-        match_collections = CollectionFactory().create_match_collections(matches, events)
-        RaceTicketFactory().create_race_tickets(match_collections + matches_collections)
-        request = RequestFactory().get('/game/api/get_offer')
-        request.user = AnonymousUser()
-        response = get_offer(request)
-        cls.response_data = json.loads(response.content.decode('utf-8'))
+        cls.matches_collections = CollectionFactory().create_matches_collections()
+        cls.match_collections = CollectionFactory().create_match_collections(matches, events)
+        RaceTicketFactory().create_race_tickets(cls.match_collections + cls.matches_collections)
+        cls.request = RequestFactory().get('/game/api/get_offer')
+        cls.request.user = AnonymousUser()
 
     def setUp(self):
         self.maxDiff = None
 
     def test_three_fields_present(self):
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(
-            "matches_offer" in self.__class__.response_data and
-            "deep_analysis_offer" in self.__class__.response_data and
-            "played_race_tickets" in self.__class__.response_data)
+            "matches_offer" in response_data and
+            "deep_analysis_offer" in response_data and
+            "played_race_tickets" in response_data)
 
-    def test_matches_offer_contains_2_matches_collections_for_14_matches(self):
-        self.assertEqual(len(self.__class__.response_data["matches_offer"]), 2)
+    def test_match_offer_contains_2_matches_collections_for_14_matches(self):
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["matches_offer"]), 2)
 
     def test_matches_offer_contains_14_match_collections_for_14_matches(self):
-        self.assertEqual(len(self.__class__.response_data["deep_analysis_offer"]), 14)
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["deep_analysis_offer"]), 14)
 
     def test_no_played_user_ticket_for_anonymususer(self):
-        self.assertEqual(len(self.__class__.response_data["played_race_tickets"]), 0)
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["played_race_tickets"]), 0)
 
     def test_matches_collections_contains_three_fields(self):
-        collection = self.__class__.response_data["matches_offer"][0]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        collection = response_data["matches_offer"][0]
         self.assertTrue(
             "race_tickets" in collection and
             "collection" in collection and
             "match_events" in collection)
 
     def test_match_collections_contains_three_fields(self):
-        collection = self.__class__.response_data["deep_analysis_offer"][0]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        collection = response_data["deep_analysis_offer"][0]
         self.assertTrue(
             "race_tickets" in collection and
             "collection" in collection and
             "match_events" in collection)
 
     def test_matches_collections_race_tickets_contains_6_different(self):
-        race_tickets = self.__class__.response_data["deep_analysis_offer"][0]["race_tickets"]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        race_tickets = response_data["deep_analysis_offer"][0]["race_tickets"]
         race_ticket_data = [json.dumps(race_ticket, sort_keys=True) for race_ticket in race_tickets]
         self.assertEqual(len(set(race_ticket_data)), 6)
 
     def test_match_collections_race_tickets_contains_6_different(self):
-        race_tickets = self.__class__.response_data["matches_offer"][0]["race_tickets"]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        race_tickets = response_data["matches_offer"][0]["race_tickets"]
         race_ticket_data = [json.dumps(race_ticket, sort_keys=True) for race_ticket in race_tickets]
         self.assertEqual(len(set(race_ticket_data)), 6)
 
     def test_match_collections_match_events_contains_7_different_match_event(self):
-        match_events = self.__class__.response_data["matches_offer"][0]["match_events"]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        match_events = response_data["matches_offer"][0]["match_events"]
         match_events_data = [json.dumps(match_event, sort_keys=True) for match_event in match_events]
         self.assertEqual(len(set(match_events_data)), 7)
 
     def test_matches_collections_match_events_contains_7_different_match_events(self):
-        match_events = self.__class__.response_data["deep_analysis_offer"][0]["match_events"]
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        match_events = response_data["deep_analysis_offer"][0]["match_events"]
         match_events_data = [json.dumps(match_event, sort_keys=True) for match_event in match_events]
         self.assertEqual(len(set(match_events_data)), 7)
+
+    def test_matches_offer_does_not_contain_not_playable(self):
+        self.__class__.matches_collections[0].playable = False
+        self.__class__.matches_collections[0].save()
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["matches_offer"]), 1)
+
+    def test_match_offer_does_not_contain_not_playable(self):
+        self.__class__.match_collections[0].playable = False
+        self.__class__.match_collections[0].save()
+        response = get_offer(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["deep_analysis_offer"]), 13)
