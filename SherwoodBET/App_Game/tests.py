@@ -3,8 +3,10 @@ from _Serializer.serializer import Serializer as S
 from django.contrib.auth.models import AnonymousUser, User
 from App_Profile.models import Profile
 from App_Game.views import get_offer
-from App_Game.factories import TeamFactory, MatchFactory, EventFactory, MatchEventFactory, CollectionFactory, RaceTicketFactory
-from App_Game.models import Team, Event, Match, MatchEvent, Collection
+from App_Game.factories import (
+    TeamFactory, MatchFactory, EventFactory, MatchEventFactory, CollectionFactory, RaceTicketFactory)
+from App_Game.models import (
+    Team, Event, Match, MatchEvent, Collection)
 import json
 
 class FactoryTest(TestCase):
@@ -59,29 +61,54 @@ class FactoryTest(TestCase):
         RaceTicketFactory().create_race_tickets(match_collections + matches_collections)
         self.assertEqual(len(Collection.objects.all()), 16)
 
-class OfferTest(TestCase):
+class OfferTestSunnyDayNoUser(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        teams = TeamFactory().create_teams(28)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        matches_collections = CollectionFactory().create_matches_collections()
+        match_collections = CollectionFactory().create_match_collections(matches, events)
+        RaceTicketFactory().create_race_tickets(match_collections + matches_collections)
+        request = RequestFactory().get('/game/api/get_offer')
+        request.user = AnonymousUser()
+        response = get_offer(request)
+        cls.response_data = json.loads(response.content.decode('utf-8'))
 
     def setUp(self):
-        self.user = Profile.objects.create_profile(username="Kazmer12", email="kaz@mer.hu", password="123456Ab")
-        self.request_factory = RequestFactory()
-        self.team_factory = TeamFactory()
-        self.match_factory = MatchFactory()
-        self.event_factory = EventFactory()
-        self.match_event_factory = MatchEventFactory()
-        self.collection_factory = CollectionFactory()
-        self.race_ticket_factory = RaceTicketFactory()
-        # self.user_ticket_factory = UserTicketFactory()
-        # self.bet_factory = BetFactory()
+        self.maxDiff = None
 
-    # def test_get_offer_public(self):
-    #     teams = self.team_factory.create_teams(14)
-    #     events = self.event_factory.create_events()
-    #     matches = self.match_factory.create_matches(teams)
-    #     match_events = self.match_event_factory.create_match_events(matches, events)
-    #     collections = self.collection_factory.create_collections(matches, events)
-    #     race_tickets = self.race_ticket_factory.create_race_tickets(collections)
-    #     request = self.request_factory.get('/game/api/get_offer')
-    #     request.user = AnonymousUser()
-    #     response = get_offer(request)
-    #     blueprint = {"matches_offer": [], "deep_analysis_offer": [], "played_race_tickets": []}
-    #     self.assertEqual({}, json.loads(response.content.decode('utf-8')))
+    def test_three_fields_present(self):
+        self.assertTrue(
+            "matches_offer" in self.__class__.response_data and
+            "deep_analysis_offer" in self.__class__.response_data and
+            "played_race_tickets" in self.__class__.response_data)
+
+    def test_matches_offer_contains_2_matches_collections_for_14_matches(self):
+        self.assertEqual(len(self.__class__.response_data["matches_offer"]), 2)
+
+    def test_matches_offer_contains_14_match_collections_for_14_matches(self):
+        self.assertEqual(len(self.__class__.response_data["deep_analysis_offer"]), 14)
+
+    def test_no_played_user_ticket_for_anonymususer(self):
+        self.assertEqual(len(self.__class__.response_data["played_race_tickets"]), 0)
+
+    def test_matches_collections_contains_three_fields(self):
+        collection = self.__class__.response_data["matches_offer"][0]
+        self.assertTrue(
+            "race_tickets" in collection and
+            "collection" in collection and
+            "match_events" in collection)
+
+    def test_match_collections_contains_three_fields(self):
+        collection = self.__class__.response_data["deep_analysis_offer"][0]
+        self.assertTrue(
+            "race_tickets" in collection and
+            "collection" in collection and
+            "match_events" in collection)
+
+    # def test_matches_collections_race_tickets_contains_three_fields(self):
+    #     race_tickets = self.__class__.response_data["deep_analysis_offer"][0]["race_tickets"]
+    #     race_ticket_data = []
