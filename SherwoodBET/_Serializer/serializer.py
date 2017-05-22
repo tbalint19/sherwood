@@ -1,17 +1,24 @@
 class Serializer:
 
-    serialized = ['str', 'int', 'float', 'bool', 'NoneType']
+    serialized = [str, int, float, bool, None]
     obj_extension = '_obj'
 
     @classmethod
-    def serialize(self, obj, exclude=[]):
+    def serialize(cls, obj):
+        if type(obj) is list:
+            return [S.serialize(elem) for elem in obj]
+        if type(obj) is dict:
+            serialized = {}
+            for key in obj:
+                serialized[key] = S.serialize(obj[key])
+            return serialized
+        if type(obj) in cls.serialized:
+            return obj
         serialized = {}
         for field in obj.__class__._meta.local_fields:
-            key = self.get_key(field)
-            value = self.get_value(obj, field)
+            key = cls.get_key(field)
+            value = cls.get_value(obj, field)
             serialized[key] = value
-        for key in exclude:
-            del serialized[key]
         return serialized
 
     @classmethod
@@ -21,7 +28,7 @@ class Serializer:
     @classmethod
     def get_value(self, obj, field):
         value = getattr(obj, field.name)
-        if type(value).__name__ in self.serialized:
+        if type(value) in self.serialized:
             pass
         if type(value).__name__ == 'datetime':
             value = getattr(obj, field.name).isoformat()
