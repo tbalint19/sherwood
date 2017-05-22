@@ -97,3 +97,9 @@ class SerializerTest(TestCase):
             'result': 1, 'user_ticket': "Kazmer12's #171819: PD 15th round / 1"}
         serialized = S.serialize(self.bet_on_barca_real_from_kazmer)
         self.assertEquals(data, serialized)
+
+    def test_exclude_sunnyday_with_bet(self):
+        data = {'away': 0, 'draw': 0, 'home': 0, 'match_event': 'FC Barca - R Madrid / Final result',
+            'result': 1, 'user_ticket': "Kazmer12's #171819: PD 15th round / 1"}
+        serialized = S.serialize(self.bet_on_barca_real_from_kazmer, exclude=['id'])
+        self.assertEquals(data, serialized)

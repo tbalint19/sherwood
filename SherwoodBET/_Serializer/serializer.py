@@ -4,12 +4,14 @@ class Serializer:
     obj_extension = '_obj'
 
     @classmethod
-    def serialize(self, obj):
+    def serialize(self, obj, exclude=[]):
         serialized = {}
         for field in obj.__class__._meta.local_fields:
             key = self.get_key(field)
             value = self.get_value(obj, field)
             serialized[key] = value
+        for key in exclude:
+            del serialized[key]
         return serialized
 
     @classmethod
