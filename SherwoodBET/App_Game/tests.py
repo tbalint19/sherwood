@@ -109,6 +109,22 @@ class OfferTestSunnyDayNoUser(TestCase):
             "collection" in collection and
             "match_events" in collection)
 
-    # def test_matches_collections_race_tickets_contains_three_fields(self):
-    #     race_tickets = self.__class__.response_data["deep_analysis_offer"][0]["race_tickets"]
-    #     race_ticket_data = []
+    def test_matches_collections_race_tickets_contains_6_different(self):
+        race_tickets = self.__class__.response_data["deep_analysis_offer"][0]["race_tickets"]
+        race_ticket_data = [json.dumps(race_ticket, sort_keys=True) for race_ticket in race_tickets]
+        self.assertEqual(len(set(race_ticket_data)), 6)
+
+    def test_match_collections_race_tickets_contains_6_different(self):
+        race_tickets = self.__class__.response_data["matches_offer"][0]["race_tickets"]
+        race_ticket_data = [json.dumps(race_ticket, sort_keys=True) for race_ticket in race_tickets]
+        self.assertEqual(len(set(race_ticket_data)), 6)
+
+    def test_match_collections_match_events_contains_7_different_match_event(self):
+        match_events = self.__class__.response_data["matches_offer"][0]["match_events"]
+        match_events_data = [json.dumps(match_event, sort_keys=True) for match_event in match_events]
+        self.assertEqual(len(set(match_events_data)), 7)
+
+    def test_matches_collections_match_events_contains_7_different_match_events(self):
+        match_events = self.__class__.response_data["deep_analysis_offer"][0]["match_events"]
+        match_events_data = [json.dumps(match_event, sort_keys=True) for match_event in match_events]
+        self.assertEqual(len(set(match_events_data)), 7)
