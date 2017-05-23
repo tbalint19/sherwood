@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from _Serializer.serializer import Serializer as S
 from django.contrib.auth.models import AnonymousUser, User
 from App_Profile.models import Profile
@@ -165,12 +165,12 @@ class TicketTestSunnyDay(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        teams = TeamFactory().create_teams(28)
-        events = EventFactory().create_events()
-        matches = MatchFactory().create_matches(teams)
-        MatchEventFactory().create_match_events(matches, events)
+        cls.teams = TeamFactory().create_teams(28)
+        cls.events = EventFactory().create_events()
+        cls.matches = MatchFactory().create_matches(cls.teams)
+        MatchEventFactory().create_match_events(cls.matches, cls.events)
         cls.matches_collections = CollectionFactory().create_matches_collections()
-        cls.match_collections = CollectionFactory().create_match_collections(matches, events)
+        cls.match_collections = CollectionFactory().create_match_collections(cls.matches, cls.events)
         RaceTicketFactory().create_race_tickets(cls.match_collections + cls.matches_collections)
         cls.race_ticket_id = RaceTicket.objects.filter(is_professional=False)[0].id
         cls.request = RequestFactory().get('/game/api/get_ticket?race_ticket_id=' + str(cls.race_ticket_id))
@@ -194,3 +194,16 @@ class TicketTestSunnyDay(TestCase):
         user_tickets = UserTicket.objects.filter(user_obj=self.__class__.request.user)
         self.assertTrue(len(user_tickets) == 1)
         self.assertTrue(user_tickets[0].race_ticket_obj.id == self.__class__.race_ticket_id)
+
+    def test_bets_created(self):
+        response = get_ticket(self.__class__.request)
+        bets = Bet.objects.filter(user_ticket_obj__user_obj=self.__class__.request.user)
+        self.assertTrue(len(bets) == 7)
+
+    def test_second_get_does_not_recreate(self):
+        get_ticket(self.__class__.request)
+        get_ticket(self.__class__.request)
+        user_tickets = UserTicket.objects.filter(user_obj=self.__class__.request.user)
+        bets = Bet.objects.filter(user_ticket_obj__user_obj=self.__class__.request.user)
+        self.assertTrue(len(user_tickets) == 1)
+        self.assertTrue(len(bets) == 7)
