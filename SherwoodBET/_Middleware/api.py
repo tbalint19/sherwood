@@ -8,12 +8,12 @@ class API:
     def endpoint(cls, Expected):
         def validate(view):
             def create_response(request):
-                arg = Expected().get_from_request(request)
-                if not arg:
+                request = Expected().get_from_request(request)
+                if not request:
                     return JsonResponse({}, status=403)
-                if cls.is_authenticated(request, Expected.auth_status):
-                    return JsonResponse(S.serialize(view(arg)))
-                return JsonResponse({}, status=401)
+                if not cls.is_authenticated(request, Expected.auth_status):
+                    return JsonResponse({}, status=401)
+                return JsonResponse(S.serialize(view(request)))
             return create_response
         return validate
 
