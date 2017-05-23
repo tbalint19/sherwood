@@ -95,6 +95,11 @@ class UserTicketManager(models.Manager):
             for user_ticket in self.filter(
             user_obj=None if user == AnonymousUser() else user, paid=True, live=False, finished=False)]
 
+    def get_or_create_user_ticket(self, user, race_ticket):
+        user_ticket = self.get_or_create(user_obj=user, race_ticket_obj=race_ticket)[0]
+        user_ticket.save()
+        return user_ticket
+
 class UserTicket(models.Model):
 
     race_ticket_obj = models.ForeignKey(RaceTicket, on_delete=models.CASCADE, related_name='user_tickets')
@@ -111,6 +116,23 @@ class UserTicket(models.Model):
     def __str__(self):
         return self.user_obj.username + "'s " + str(self.race_ticket_obj)
 
+    def get_or_create_related_bets(self):
+        related_bets = []
+        for obj in self.race_ticket_obj.collection_obj.match_events.all():
+            bet = Bet.objects.get_or_create_bet(self, obj.match_event_obj)
+            related_bets.append(
+                {"bet_data": bet,
+                "match_data": bet.match_event_obj.match_obj,
+                "event_data": bet.match_event_obj.event_obj})
+        return related_bets
+
+class BetManager(models.Manager):
+
+    def get_or_create_bet(self, user_ticket, match_event):
+        bet = self.get_or_create(user_ticket_obj=user_ticket, match_event_obj=match_event)[0]
+        bet.save()
+        return bet
+
 class Bet(models.Model):
 
     match_event_obj = models.ForeignKey(MatchEvent, on_delete=models.CASCADE)
@@ -119,6 +141,8 @@ class Bet(models.Model):
     draw = models.IntegerField(default=0)
     away = models.IntegerField(default=0)
     result = models.IntegerField(default=1)
+
+    objects = BetManager()
 
     def __str__(self):
         return str(self.user_ticket_obj) + " - " + str(self.match_event_obj)

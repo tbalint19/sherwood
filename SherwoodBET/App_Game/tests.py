@@ -2,11 +2,11 @@ from django.test import TestCase, RequestFactory
 from _Serializer.serializer import Serializer as S
 from django.contrib.auth.models import AnonymousUser, User
 from App_Profile.models import Profile
-from App_Game.views import get_offer
+from App_Game.views import get_offer, get_ticket
 from App_Game.factories import (
     TeamFactory, MatchFactory, EventFactory, MatchEventFactory, CollectionFactory, RaceTicketFactory)
 from App_Game.models import (
-    Team, Event, Match, MatchEvent, Collection)
+    Team, Event, Match, MatchEvent, Collection, RaceTicket, UserTicket, Bet)
 import json
 
 class FactoryTest(TestCase):
@@ -160,3 +160,37 @@ class OfferTestSunnyDayNoUser(TestCase):
         response = get_offer(self.__class__.request)
         response_data = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(response_data["deep_analysis_offer"]), 13)
+
+class TicketTestSunnyDay(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        teams = TeamFactory().create_teams(28)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        cls.matches_collections = CollectionFactory().create_matches_collections()
+        cls.match_collections = CollectionFactory().create_match_collections(matches, events)
+        RaceTicketFactory().create_race_tickets(cls.match_collections + cls.matches_collections)
+        cls.race_ticket_id = RaceTicket.objects.filter(is_professional=False)[0].id
+        cls.request = RequestFactory().get('/game/api/get_ticket?race_ticket_id=' + str(cls.race_ticket_id))
+        cls.request.user = Profile.objects.create_profile("belane", "bela@ne.hu", '123456Ab')
+
+    def setUp(self):
+        self.maxDiff = None
+
+    def test_response_given(self):
+        response = get_ticket(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_contains_two_fields(self):
+        response = get_ticket(self.__class__.request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue("user_ticket" in response_data and "related_bets" in response_data)
+
+    def test_user_ticket_created(self):
+        response = get_ticket(self.__class__.request)
+        user_tickets = UserTicket.objects.filter(user_obj=self.__class__.request.user)
+        self.assertTrue(len(user_tickets) == 1)
+        self.assertTrue(user_tickets[0].race_ticket_obj.id == self.__class__.race_ticket_id)

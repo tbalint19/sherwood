@@ -18,8 +18,7 @@ def get_ticket(request):
         return {"error": "Insufficient funds"}
     return {
         "user_ticket": user_ticket,
-        "related_bets": user_ticket.get_or_create_related_bets(),
-        "related_matches": []}
+        "related_bets": user_ticket.get_or_create_related_bets()}
 
 
 @API.endpoint(BetRequest)

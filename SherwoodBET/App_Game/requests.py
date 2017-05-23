@@ -18,7 +18,7 @@ class TicketRequest:
 
     def get_from_request(self, request):
         try:
-            request.race_ticket = RaceTicket.objects.get(id=request.GET.get("race_ticket_id"))
+            request.race_ticket = RaceTicket.objects.get(id=int(request.GET.get("race_ticket_id")))
             return request
         except:
             return None

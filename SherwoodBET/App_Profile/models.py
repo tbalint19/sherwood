@@ -46,3 +46,8 @@ class Account(models.Model):
     user_obj = models.OneToOneField(User, on_delete=models.CASCADE)
     game_money = models.IntegerField(default=1000)
     real_money = models.IntegerField(default=0)
+
+    def has_sufficient_funds(self, race_ticket):
+        if race_ticket.is_professional:
+            return race_ticket.bet_amount <= self.real_money
+        return race_ticket.bet_amount <= self.game_money
