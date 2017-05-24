@@ -1,14 +1,8 @@
 from django.test import TestCase
 from _Serializer.serializer import Serializer as S
+from datetime import datetime
 
-class TestSerializer(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        pass
-
-    def setUp(self):
-        pass
+class TestSerializerPrimitives(TestCase):
 
     def test_serialized_string_returns_string(self):
         string = "bela"
@@ -70,11 +64,38 @@ class TestSerializer(TestCase):
         nones = {'b': None, 'c': None}
         self.assertEqual(nones, S.serialize(nones))
 
-    # def test_serialized_datetime_returns_datetime(self):
-    #     pass
-    #
-    # def test_serialized_list_of_datetimes_returns_list_of_datetimes(self):
-    #     pass
-    #
-    # def test_serialized_dict_of_datetimes_returns_list_of_datetimes(self):
-    #     pass
+    def test_serialized_datetime_returns_datetime(self):
+        dt = datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p')
+        self.assertEqual(dt.isoformat(), S.serialize(dt))
+
+    def test_serialized_list_of_datetimes_returns_list_of_datetimes(self):
+        dts = [
+            datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p'),
+            datetime.strptime('Jun 1 2015  1:33PM', '%b %d %Y %I:%M%p')]
+        self.assertEqual([dt.isoformat() for dt in dts], S.serialize(dts))
+
+    def test_serialized_dict_of_datetimes_returns_list_of_datetimes(self):
+        dts = {
+            'b': datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p'),
+            'c': datetime.strptime('Jun 1 2015  1:33PM', '%b %d %Y %I:%M%p')}
+        self.assertEqual({
+            'b': datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p').isoformat(),
+            'c': datetime.strptime('Jun 1 2015  1:33PM', '%b %d %Y %I:%M%p').isoformat()}, S.serialize(dts))
+
+class TestSerializerModels(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    def setUp(self):
+        pass
+
+    def test_user_returns_dict_from_user(self):
+        pass
+
+    def test_list_of_users_returns_list_of_dicts_of_users(self):
+        pass
+
+    def test_dict_of_users_returns_dict_of_dicts_of_users(self):
+        pass

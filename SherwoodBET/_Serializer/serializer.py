@@ -14,6 +14,8 @@ class Serializer:
             return serialized
         if type(obj) in cls.serialized:
             return obj
+        if type(obj).__name__ == 'datetime':
+            return obj.isoformat()
         serialized = {}
         for field in obj.__class__._meta.local_fields:
             key = cls.get_key(field)
