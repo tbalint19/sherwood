@@ -7,10 +7,10 @@ import json
 
 
 @API.endpoint(SignupRequest)
-def signup_user(user_data):
-    errors = Profile.objects.check_if_possible(user_data['username'], user_data['email'])
+def signup_user(request):
+    errors = Profile.objects.check_if_possible(request.username, request.email)
     if not errors:
-        Profile.objects.create_profile(user_data['username'], user_data['email'], user_data['password'])
+        Profile.objects.create_profile(request.username, request.email, request.password)
     return {'errors': errors}
 
 

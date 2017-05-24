@@ -4,7 +4,7 @@ import string
 class SignupRequest:
 
     auth_status = "public"
-    request_method = "post"
+    request_method = "POST"
 
     def __init__(self):
         self.user_data = None
@@ -15,19 +15,18 @@ class SignupRequest:
 
     def get_from_request(self, request):
         try:
-            method_is_valid = self.check_method(request)
             self.parse(request)
             username_is_valid = self.check_username()
             email_is_valid = self.check_email()
             password_is_valid = self.check_password()
-            if method_is_valid and username_is_valid and email_is_valid and password_is_valid:
-                return self.user_data
+            if username_is_valid and email_is_valid and password_is_valid:
+                request.username = json.loads(request.body.decode('utf-8'))['username']
+                request.email = json.loads(request.body.decode('utf-8'))['email']
+                request.password = json.loads(request.body.decode('utf-8'))['password']
+                return request
             return None
         except:
             return None
-
-    def check_method(self, request):
-        return request.method == "POST"
 
     def parse(self, request):
         self.user_data = json.loads(request.body.decode('utf-8'))
@@ -80,7 +79,7 @@ class SignupRequest:
 class LoginRequest:
 
     auth_status = "public"
-    request_method = "post"
+    request_method = "POST"
 
     def get_from_request(self, request):
         return request
@@ -88,7 +87,7 @@ class LoginRequest:
 class LogoutRequest:
 
     auth_status = "user"
-    request_method = "get"
+    request_method = "POST"
 
     def get_from_request(self, request):
         return request

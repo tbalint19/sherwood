@@ -8,6 +8,8 @@ class API:
     def endpoint(cls, Expected):
         def validate(view):
             def create_response(request):
+                if request.method != Expected.request_method:
+                    return JsonResponse({}, status=404)
                 request = Expected().get_from_request(request)
                 if not request:
                     return JsonResponse({}, status=403)

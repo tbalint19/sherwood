@@ -6,7 +6,8 @@ class TestPlayer:
         self.client = client
         if created_by_default:
             Profile.objects.create_profile(username, email, password)
-        self.client.login(username=username, password=password)
+        if logged_in_by_default:
+            self.client.login(username=username, password=password)
 
     def request_singnup(self):
         signup_data = {}

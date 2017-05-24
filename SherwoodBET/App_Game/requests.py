@@ -3,7 +3,7 @@ from App_Game.models import RaceTicket
 class OfferRequest:
 
     auth_status = "public"
-    request_method = "get"
+    request_method = "GET"
 
     def get_from_request(self, request):
         try:
@@ -14,7 +14,7 @@ class OfferRequest:
 class TicketRequest:
 
     auth_status = "user"
-    request_method = "get"
+    request_method = "GET"
 
     def get_from_request(self, request):
         try:
@@ -26,7 +26,7 @@ class TicketRequest:
 class BetRequest:
 
     auth_status = "user"
-    request_method = "post"
+    request_method = "POST"
 
     def get_from_request(self, request):
         try:
