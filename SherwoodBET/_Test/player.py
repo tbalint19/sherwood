@@ -1,21 +1,30 @@
+from django.test import Client
+from django.urls import reverse
+from App_Profile.models import Profile
+from App_Profile.views import signup_user, login_user, logout_user
 import random
+import json
 
 class TestPlayer:
 
-    def __init__(self, client, username, email, password, created_by_default=True, logged_in_by_default=True):
-        self.client = client
-        if created_by_default:
+    def __init__(self, username="Kazmer12", email="kaz@mer.hu", password="123456Ka", created=True, logged_in=True):
+        self.client = Client()
+        self.username = username
+        self.email = email
+        self.password = password
+        if created:
             Profile.objects.create_profile(username, email, password)
-        if logged_in_by_default:
+        if logged_in:
             self.client.login(username=username, password=password)
 
     def request_singnup(self):
-        signup_data = {}
-        return self.client.post(reverse('signup_user'), signup_data, content_type='application/json')
+        signup_data = {'username': self.username, 'email': self.email, 'password': self.password}
+        return self.client.post(reverse('signup_user'), json.dumps(signup_data), content_type='application/json')
 
-    def request_login(self):
-        login_data = {}
-        return self.client.post(reverse('login_user'), login_data, content_type='application/json')
+    def request_login(self, credential):
+        login_data = {'password': self.password}
+        login_data['identification'] = getattr(self, credential)
+        return self.client.post(reverse('login_user'), json.dumps(login_data), content_type='application/json')
 
     def request_logout(self):
         return self.client.get(reverse('logout_user'))

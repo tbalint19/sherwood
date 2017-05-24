@@ -16,11 +16,10 @@ def signup_user(request):
 
 @API.endpoint(LoginRequest)
 def login_user(request):
-    user_data = json.loads(request.body.decode('utf-8'))
-    user = Profile.objects.authenticate_user(request, user_data["identification"], user_data["password"])
+    user = Profile.objects.authenticate_user(request, request.identification, request.password)
     if user is not None:
         login(request, user)
-    return {'is_successful': user is not None}
+    return {"is_successful": user is not None}
 
 
 @API.endpoint(LogoutRequest)

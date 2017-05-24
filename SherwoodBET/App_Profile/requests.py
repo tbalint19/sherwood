@@ -82,12 +82,14 @@ class LoginRequest:
     request_method = "POST"
 
     def get_from_request(self, request):
+        request.identification = json.loads(request.body.decode('utf-8'))["identification"]
+        request.password = json.loads(request.body.decode('utf-8'))["password"]
         return request
 
 class LogoutRequest:
 
     auth_status = "user"
-    request_method = "POST"
+    request_method = "GET"
 
     def get_from_request(self, request):
         return request
