@@ -1,6 +1,6 @@
 class Serializer:
 
-    serialized = [str, int, float, bool, None]
+    serialized = [str, int, float, bool, type(None)]
     obj_extension = '_obj'
 
     @classmethod
