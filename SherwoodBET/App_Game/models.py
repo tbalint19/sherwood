@@ -98,7 +98,8 @@ class RaceTicketManager(models.Manager):
         for is_prof in [True, False]:
             for amount in [1, 10, 100]:
                 try:
-                    race_tickets.append(self.get(collection_obj=collection, bet_amount=amount, is_professional=is_prof))
+                    race_tickets.append(self.get(
+                        collection_obj=collection, bet_amount=amount, is_professional=is_prof))
                 except RaceTicket.DoesNotExist:
                     continue
         return race_tickets
