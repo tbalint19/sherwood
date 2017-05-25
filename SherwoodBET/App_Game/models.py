@@ -146,3 +146,9 @@ class Bet(models.Model):
 
     def __str__(self):
         return str(self.user_ticket_obj) + " - " + str(self.match_event_obj)
+
+    def update(self, home, draw, away):
+        self.home = home
+        self.draw = draw
+        self.away = away
+        self.save()

@@ -106,3 +106,14 @@ class RaceTicketFactory:
                     race_ticket.save()
                     race_tickets.append(race_ticket)
         return race_tickets
+
+class GameDataFactory:
+
+    def create(self):
+        teams = TeamFactory().create_teams(28)
+        events = EventFactory().create_events()
+        matches = MatchFactory().create_matches(teams)
+        MatchEventFactory().create_match_events(matches, events)
+        matches_collections = CollectionFactory().create_matches_collections()
+        match_collections = CollectionFactory().create_match_collections(matches, events)
+        RaceTicketFactory().create_race_tickets(match_collections + matches_collections)

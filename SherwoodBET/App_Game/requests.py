@@ -35,6 +35,7 @@ class BetRequest:
             request.bets = []
             for bet in game_data["related_bets"]:
                 request.bets.append(Bet.objects.get(id=bet["bet_data"]["id"]))
-            return game_data
+            request.bet_data = game_data["related_bets"]["bet_data"]
+            return request
         except:
             return None
