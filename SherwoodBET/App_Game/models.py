@@ -73,6 +73,16 @@ class Collection(models.Model):
     def __str__(self):
         return "#" + str(self.number) + ": " + self.title
 
+    def set_live_if_needed(self):
+        if self.match_events.filter(match_event_obj__match_obj__status=Match.LIVE).exists():
+            self.status = Collection.LIVE
+            self.save()
+
+    def set_finished_if_needed(self):
+        if not self.match_events.filter(match_event_obj__match_obj__status=Match.OVER).exists():
+            self.status = Collection.FINISHED
+            self.save()
+
 class MatchEventOfCollection(models.Model):
 
     collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='match_events')
@@ -81,6 +91,18 @@ class MatchEventOfCollection(models.Model):
     def __str__(self):
         return str(self.match_event_obj) + " of " + str(self.collection_obj)
 
+class RaceTicketManager(models.Manager):
+
+    def get_for_collection(self, collection):
+        race_tickets = []
+        for is_prof in [True, False]:
+            for amount in [1, 10, 100]:
+                try:
+                    race_tickets.append(self.get(collection_obj=collection, bet_amount=amount, is_professional=is_prof))
+                except RaceTicket.DoesNotExist:
+                    continue
+        return race_tickets
+
 class RaceTicket(models.Model):
 
     collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='race_tickets')
@@ -88,8 +110,48 @@ class RaceTicket(models.Model):
     bet_amount = models.IntegerField()
     number_of_competitors = models.IntegerField(default=0)
 
+    objects = RaceTicketManager()
+
     def __str__(self):
         return str(self.collection_obj) + " / " + str(self.bet_amount)
+
+    def sort_all(self):
+        sorted_user_tickets = sorted(self.user_tickets.all())
+        RaceTicket.set_ranking(sorted_user_tickets)
+        payoff_groups = RaceTicket.create_payoff_groups(len(sorted_user_tickets))
+        RaceTicket.fill_payoff_groups_with_usertickets(payoff_groups, sorted_user_tickets)
+        RaceTicket.set_payoff(payoff_groups)
+
+    @staticmethod
+    def set_ranking(sorted_user_tickets):
+        for index, user_ticket in enumerate(sorted_user_tickets):
+            user_ticket.rank = index + 1
+            user_ticket.save()
+
+    @staticmethod
+    def create_payoff_groups(number_of_tickets):
+        number_of_draws = int(number_of_tickets % 20)
+        size_of_group = int((number_of_tickets - number_of_draws)/20)
+        payoff_groups = [["empty_spot" for x in range(size_of_group)] for x in range(21)]
+        payoff_groups[10] = ["empty_spot" for x in range(number_of_draws)]
+        return payoff_groups
+
+    @staticmethod
+    def fill_payoff_groups_with_usertickets(payoff_groups, sorted_user_tickets):
+        ticket_index = 0
+        for payoff_group in payoff_groups:
+            for spot_index in range(len(payoff_group)):
+                payoff_group[spot_index] = sorted_user_tickets[ticket_index]
+                ticket_index += 1
+
+    @staticmethod
+    def set_payoff(payoff_groups):
+        current_payoff = 20
+        for payoff_group in payoff_groups:
+            for user_ticket in payoff_group:
+                user_ticket.payoff = current_payoff/10
+                user_ticket.save()
+            current_payoff -= 1
 
 class UserTicketManager(models.Manager):
 
@@ -137,6 +199,11 @@ class UserTicket(models.Model):
 
     def __str__(self):
         return self.user_obj.username + "'s " + str(self.race_ticket_obj)
+
+    def __lt__(self, other):
+        if self.result == other.result:
+            return self.id > other.id
+        return self.result > other.result
 
     def get_or_create_related_bets(self):
         related_bets = []
