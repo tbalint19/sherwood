@@ -106,7 +106,21 @@ class UserTicketManager(models.Manager):
         return user_ticket
 
     def get_results(self, user, params):
-        pass
+        user_tickets = self.filter(user_obj=user)
+        if "status" in params:
+            user_tickets = user_tickets.filter(race_ticket_obj__collection_obj__status=params['status'])
+        if "is_professional" in status:
+            user_tickets = user_tickets.filter(race_ticket_obj__is_professional=params['is_professional'])
+        if "bet_amount" in params:
+            user_tickets = user_tickets.filter(race_ticket_obj__bet_amount=params['bet_amount'])
+        if "min_payoff" in params:
+            user_tickets = user_tickets.filter(payoff__gte=params['min_payoff'])
+        if "max_payoff" in params:
+            user_tickets = user_tickets.filter(payoff__lte=params['max_payoff'])
+        if len(user_tickets[params['present']:]) > 12:
+            return user_tickets[params['present']:][:12]
+        return [{} for user_ticket in user_tickets[params['present']:]]
+
 
 class UserTicket(models.Model):
 
