@@ -100,6 +100,9 @@ class UserTicketManager(models.Manager):
         user_ticket.save()
         return user_ticket
 
+    def get_results(self, user, params):
+        pass
+
 class UserTicket(models.Model):
 
     race_ticket_obj = models.ForeignKey(RaceTicket, on_delete=models.CASCADE, related_name='user_tickets')
@@ -125,6 +128,12 @@ class UserTicket(models.Model):
                 "match_data": bet.match_event_obj.match_obj,
                 "event_data": bet.match_event_obj.event_obj})
         return related_bets
+
+    def get_bet_results(self):
+        return [{
+            "bet_data": bet,
+            "match_data": bet.match_event_obj.match_obj,
+            "event_data": bet.match_event_obj.event_obj} for bet in self.bets.all()]
 
 class BetManager(models.Manager):
 
