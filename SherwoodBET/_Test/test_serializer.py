@@ -103,8 +103,7 @@ class TestSerializeGameModels(TestCase):
 
     def test_serialize_match(self):
         data = {'away_team': 'R Madrid', 'deadline': '2005-06-01T13:33:00', 'home_team': 'FC Barca',
-            'link': '', 'id': self.__class__.barca_real.id, 'league': 'Friendly',
-            'live': False, 'over': False, 'round': '', 'upcoming': True}
+            'link': '', 'id': self.__class__.barca_real.id, 'league': 'Friendly', 'round': "", 'status': "Upcoming"}
         serialized = S.serialize(self.__class__.barca_real)
         self.assertEquals(data, serialized)
 
@@ -120,8 +119,8 @@ class TestSerializeGameModels(TestCase):
         self.assertEquals(data, serialized)
 
     def test_serialize_collection(self):
-        data = {'deep_analysis': False, 'finished': False, 'hidden': True, 'intro': 'Play it!', 'live': False,
-            'number': 171819, 'playable': False, 'title': 'PD 15th round'}
+        data = {'is_deep_analysis': False, 'intro': 'Play it!', 'status': "Hidden",
+            'number': 171819, 'title': 'PD 15th round'}
         serialized = S.serialize(self.__class__.PD15_collection)
         self.assertEquals(data, serialized)
 
@@ -139,7 +138,7 @@ class TestSerializeGameModels(TestCase):
         self.assertEquals(data, serialized)
 
     def test_serialize_user_ticket(self):
-        data = {'finished': False, 'id': self.__class__.user_ticket_of_kazmer.id, 'live': False, 'paid': False,
+        data = {'id': self.__class__.user_ticket_of_kazmer.id, 'paid': False,
             'payoff': None, 'points': 1, 'race_ticket': '#171819: PD 15th round / 1', 'rank': None, 'user': 'Kazmer12'}
         serialized = S.serialize(self.__class__.user_ticket_of_kazmer)
         self.assertEquals(data, serialized)

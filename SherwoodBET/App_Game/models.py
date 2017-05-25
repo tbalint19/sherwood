@@ -11,6 +11,10 @@ class Team(models.Model):
         return self.short_name
 
 class Match(models.Model):
+    UPCOMING = "Upcoming"
+    LIVE = "Live"
+    OVER = "Over"
+    status_choices = ((UPCOMING, "Upcoming"), (LIVE, "Live"), (OVER, "Over"))
 
     home_team_obj = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home_team")
     away_team_obj = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away_team")
@@ -18,9 +22,7 @@ class Match(models.Model):
     round = models.CharField(max_length=10, default="", blank=True)
     link = models.CharField(max_length=100, default="", blank=True)
     deadline = models.DateTimeField()
-    upcoming = models.BooleanField(default=True)
-    live = models.BooleanField(default=False)
-    over = models.BooleanField(default=False)
+    status = models.CharField(max_length=8, choices=status_choices, default=UPCOMING)
 
     def __str__(self):
         return str(self.home_team_obj) + " - " + str(self.away_team_obj)
@@ -51,18 +53,20 @@ class CollectionManager(models.Manager):
             "event": obj.match_event_obj.event_obj}
             for obj in collection.match_events.all()],
             "race_tickets": [race_ticket for race_ticket in collection.race_tickets.all()]}
-            for collection in self.filter(playable=True, deep_analysis=is_deep_analysis)]
+            for collection in self.filter(status=Collection.PLAYABLE, is_deep_analysis=is_deep_analysis)]
 
 class Collection(models.Model):
+    HIDDEN = "Hidden"
+    PLAYABLE = "Playable"
+    LIVE = "Live"
+    FINISHED = "Finished"
+    status_choices = ((HIDDEN, "Hidden"), (PLAYABLE, "Playable"), (LIVE, "Live"), (FINISHED, "Finished"))
 
     number = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=30)
     intro = models.CharField(max_length= 300)
-    hidden = models.BooleanField(default=True)
-    playable = models.BooleanField(default=False)
-    live = models.BooleanField(default=False)
-    finished = models.BooleanField(default=False)
-    deep_analysis = models.BooleanField(default=False)
+    status = models.CharField(max_length=8, choices=status_choices, default=HIDDEN)
+    is_deep_analysis = models.BooleanField(default=False)
 
     objects = CollectionManager()
 
@@ -93,7 +97,8 @@ class UserTicketManager(models.Manager):
         return [
             user_ticket.race_ticket_obj
             for user_ticket in self.filter(
-            user_obj=None if user == AnonymousUser() else user, paid=True, live=False, finished=False)]
+            user_obj=None if user == AnonymousUser() else user, paid=True,
+            race_ticket_obj__collection_obj__status=Collection.PLAYABLE)]
 
     def get_or_create_user_ticket(self, user, race_ticket):
         user_ticket = self.get_or_create(user_obj=user, race_ticket_obj=race_ticket)[0]
@@ -111,8 +116,6 @@ class UserTicket(models.Model):
     rank = models.IntegerField(null=True, blank=True, default=None)
     payoff = models.FloatField(null=True, blank=True, default=None)
     paid = models.BooleanField(default=False)
-    live = models.BooleanField(default=False)
-    finished = models.BooleanField(default=False)
 
     objects = UserTicketManager()
 
