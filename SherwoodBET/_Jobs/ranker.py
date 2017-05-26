@@ -3,11 +3,11 @@ class Ranker:
         self.user_tickets = sorted(user_tickets)
         self.payoff_groups = self.create_payoff_groups()
 
-    def rank(self, race_ticket):
+    def rank(self):
         self.set_ranking()
-        self.fill_payoff_groups_with_usertickets(payoff_groups, sorted_user_tickets)
-        RaceTicket.set_payoff(payoff_groups)
-        return self.user_ticket
+        self.fill_payoff_groups_with_usertickets()
+        self.set_payoff()
+        return self.user_tickets
 
     def set_ranking(self):
         for index, user_ticket in enumerate(self.user_tickets):
@@ -24,8 +24,8 @@ class Ranker:
 
     def fill_payoff_groups_with_usertickets(self):
         ticket_index = 0
-        for payoff_group in payoff_groups:
-            for spot_index in range(len(self.payoff_group)):
+        for payoff_group in self.payoff_groups:
+            for spot_index in range(len(payoff_group)):
                 payoff_group[spot_index] = self.user_tickets[ticket_index]
                 ticket_index += 1
 
