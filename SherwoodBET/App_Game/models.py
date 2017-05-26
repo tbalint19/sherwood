@@ -116,44 +116,6 @@ class RaceTicket(models.Model):
     def __str__(self):
         return str(self.collection_obj) + " / " + str(self.bet_amount)
 
-    def sort_all(self):
-        sorted_user_tickets = sorted(self.user_tickets.all())
-        RaceTicket.set_ranking(sorted_user_tickets)
-        payoff_groups = RaceTicket.create_payoff_groups(len(sorted_user_tickets))
-        RaceTicket.fill_payoff_groups_with_usertickets(payoff_groups, sorted_user_tickets)
-        RaceTicket.set_payoff(payoff_groups)
-
-    @staticmethod
-    def set_ranking(sorted_user_tickets):
-        for index, user_ticket in enumerate(sorted_user_tickets):
-            user_ticket.rank = index + 1
-            user_ticket.save()
-
-    @staticmethod
-    def create_payoff_groups(number_of_tickets):
-        number_of_draws = int(number_of_tickets % 20)
-        size_of_group = int((number_of_tickets - number_of_draws)/20)
-        payoff_groups = [["empty_spot" for x in range(size_of_group)] for x in range(21)]
-        payoff_groups[10] = ["empty_spot" for x in range(number_of_draws)]
-        return payoff_groups
-
-    @staticmethod
-    def fill_payoff_groups_with_usertickets(payoff_groups, sorted_user_tickets):
-        ticket_index = 0
-        for payoff_group in payoff_groups:
-            for spot_index in range(len(payoff_group)):
-                payoff_group[spot_index] = sorted_user_tickets[ticket_index]
-                ticket_index += 1
-
-    @staticmethod
-    def set_payoff(payoff_groups):
-        current_payoff = 20
-        for payoff_group in payoff_groups:
-            for user_ticket in payoff_group:
-                user_ticket.payoff = current_payoff/10
-                user_ticket.save()
-            current_payoff -= 1
-
 class UserTicketManager(models.Manager):
 
     def get_played_race_tickets(self, user):
