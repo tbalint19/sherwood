@@ -94,7 +94,7 @@ class LogoutRequest:
     def get_from_request(self, request):
         return request
 
-class LogoutRequest:
+class EmailAuthRequest:
 
     auth_status = "public"
     request_method = "GET"

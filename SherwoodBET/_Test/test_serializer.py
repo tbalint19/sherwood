@@ -49,6 +49,7 @@ class TestSerializeProfileModels(TestCase):
             'id': self.__class__.user.profile.id,
             'user': 'bela',
             'rank': 'newbie',
+            'email_sent': False,
             'annual_points': 0,
             'monthly_points': 0,
             'is_confirmed': False,

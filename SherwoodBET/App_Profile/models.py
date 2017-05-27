@@ -46,6 +46,7 @@ class Profile(models.Model):
     is_confirmed = models.BooleanField(default=False)
     confirmation_code = models.CharField(max_length=25, default=None, blank=True, null=True)
     email_sent = models.BooleanField(default=False)
+    email_attempted = models.BooleanField(default=False)
 
     objects = ProfileManager()
 

@@ -1,4 +1,4 @@
-from App_Profile.requests import SignupRequest, LoginRequest, LogoutRequest
+from App_Profile.requests import SignupRequest, LoginRequest, LogoutRequest, EmailAuthRequest
 from App_Profile.models import Profile, Account
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
