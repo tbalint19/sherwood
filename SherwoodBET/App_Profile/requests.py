@@ -93,3 +93,13 @@ class LogoutRequest:
 
     def get_from_request(self, request):
         return request
+
+class LogoutRequest:
+
+    auth_status = "public"
+    request_method = "GET"
+
+    def get_from_request(self, request):
+        request.confirmation_code = request.GET.get("confirmation_code")
+        request.username = request.GET.get("username")
+        return request

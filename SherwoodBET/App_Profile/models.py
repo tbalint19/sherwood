@@ -26,6 +26,17 @@ class ProfileManager(models.Manager):
             return None
         return authenticate(request, username=credential, password=password)
 
+    def confirm_user(self, confirmation_code, username):
+        try:
+            profile = self.get(confirmation_code=confirmation_code, user_obj__username=username)
+        except Profile.DoesNotExist:
+            profile = None
+        if profile is not None:
+            profile.is_confirmed = True
+            profile.save()
+        return profile is not None
+
+
 class Profile(models.Model):
 
     user_obj = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -34,6 +45,7 @@ class Profile(models.Model):
     monthly_points = models.IntegerField(default=0)
     is_confirmed = models.BooleanField(default=False)
     confirmation_code = models.CharField(max_length=25, default=None, blank=True, null=True)
+    email_sent = models.BooleanField(default=False)
 
     objects = ProfileManager()
 

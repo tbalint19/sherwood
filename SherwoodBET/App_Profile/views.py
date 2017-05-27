@@ -26,3 +26,9 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return {'is_successful': True}
+
+
+@API.endpoint(EmailAuthRequest)
+def confirm_user(request):
+    return {
+        'is_successful': Profile.objects.confirm_user(request.confirmation_code, request.username)}

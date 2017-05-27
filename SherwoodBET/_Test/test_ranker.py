@@ -1,5 +1,5 @@
 from django.test import TestCase
-from _Jobs.ranker import Ranker
+from _Jobs.update_standings import Ranker
 import random
 
 class UserTicketMock:
