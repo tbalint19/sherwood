@@ -9,8 +9,7 @@ class TestProfile(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        user_in_db = User.objects.create_user(
-            username='DefaultInDB', email='Default@indb.hu', password='123456Ab')
+        user_in_db = User.objects.create_user(username='DefaultInDB', email='Default@indb.hu', password='123456Ab')
         Profile(user_obj=user_in_db).save()
         Account(user_obj=user_in_db).save()
 

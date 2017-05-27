@@ -6,11 +6,11 @@ import string
 
 class ProfileManager(models.Manager):
 
-    def create_profile(self, username, email, password):
-        user = User.objects.create_user(
-            username=username, email=email, password=password)
+    def create_profile(self, username, email, password, inviter=None):
+        user = User.objects.create_user(username=username, email=email, password=password)
         Account(user_obj=user).save()
         Profile(user_obj=user).set_confirmation_code().save()
+        Invitation.objects.create_if_possible(user, inviter)
         return user
 
     def check_if_possible(self, username, email):
@@ -50,6 +50,9 @@ class Profile(models.Model):
 
     objects = ProfileManager()
 
+    def __str__(self):
+        return self.user_obj.username + "'s profile'"
+
     def set_confirmation_code(self):
         self.confirmation_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(25))
         return self
@@ -59,6 +62,9 @@ class Account(models.Model):
     user_obj = models.OneToOneField(User, on_delete=models.CASCADE)
     game_money = models.IntegerField(default=1000)
     real_money = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user_obj.username + "'s account'"
 
     def has_sufficient_funds(self, race_ticket):
         if race_ticket.is_professional:
@@ -79,3 +85,25 @@ class Account(models.Model):
         user_ticket.paid = True
         self.save()
         user_ticket.save()
+
+class InvitationManager(models.Manager):
+
+    def create_if_possible(self, invited, inviter):
+        try:
+            user = User.objects.get(username=inviter)
+        except User.DoesNotExist:
+            user = None
+        if user is not None:
+            Invitation(inviter=user, invited=invited).save()
+        return user is not None
+
+
+class Invitation(models.Model):
+
+    inviter = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='inviter')
+    invited = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='invited')
+
+    objects = InvitationManager()
+
+    def __str__(self):
+        return str(self.inviter) + " - " + str(self.invited)

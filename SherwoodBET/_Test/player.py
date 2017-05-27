@@ -13,12 +13,12 @@ class TestPlayer:
         self.email = email
         self.password = password
         if created:
-            Profile.objects.create_profile(username, email, password)
+            Profile.objects.create_profile(username, email, password, "bela12")
         if logged_in:
             self.client.login(username=username, password=password)
 
     def request_singnup(self):
-        signup_data = {'username': self.username, 'email': self.email, 'password': self.password}
+        signup_data = {'username': self.username, 'email': self.email, 'password': self.password, 'inviter': "bela12"}
         return self.client.post(reverse('signup_user'), json.dumps(signup_data), content_type='application/json')
 
     def request_login(self, credential):

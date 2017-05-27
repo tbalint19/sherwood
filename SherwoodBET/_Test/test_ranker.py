@@ -30,15 +30,15 @@ class TestRanker(TestCase):
         user_tickets = [UserTicketMock(x, random.randint(0, 1000)) for x in range(10)]
         ranker = Ranker(user_tickets)
         ranked = ranker.rank()
-        self.assertTrue(ranked[0].result > ranked[1].result)
-        self.assertTrue(ranked[1].result > ranked[2].result)
-        self.assertTrue(ranked[2].result > ranked[3].result)
-        self.assertTrue(ranked[3].result > ranked[4].result)
-        self.assertTrue(ranked[4].result > ranked[5].result)
-        self.assertTrue(ranked[5].result > ranked[6].result)
-        self.assertTrue(ranked[6].result > ranked[7].result)
-        self.assertTrue(ranked[7].result > ranked[8].result)
-        self.assertTrue(ranked[8].result > ranked[9].result)
+        self.assertTrue(ranked[0].result >= ranked[1].result)
+        self.assertTrue(ranked[1].result >= ranked[2].result)
+        self.assertTrue(ranked[2].result >= ranked[3].result)
+        self.assertTrue(ranked[3].result >= ranked[4].result)
+        self.assertTrue(ranked[4].result >= ranked[5].result)
+        self.assertTrue(ranked[5].result >= ranked[6].result)
+        self.assertTrue(ranked[6].result >= ranked[7].result)
+        self.assertTrue(ranked[7].result >= ranked[8].result)
+        self.assertTrue(ranked[8].result >= ranked[9].result)
 
     def test_less_than_20_sets_all_payoff_to_1(self):
         user_tickets = [UserTicketMock(x, random.randint(0, 1000)) for x in range(19)]

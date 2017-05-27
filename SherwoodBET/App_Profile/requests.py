@@ -23,6 +23,7 @@ class SignupRequest:
                 request.username = json.loads(request.body.decode('utf-8'))['username']
                 request.email = json.loads(request.body.decode('utf-8'))['email']
                 request.password = json.loads(request.body.decode('utf-8'))['password']
+                request.inviter = json.loads(request.body.decode('utf-8'))['inviter']
                 return request
             return None
         except:

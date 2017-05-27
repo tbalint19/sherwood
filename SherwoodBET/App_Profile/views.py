@@ -10,7 +10,7 @@ import json
 def signup_user(request):
     errors = Profile.objects.check_if_possible(request.username, request.email)
     if not errors:
-        Profile.objects.create_profile(request.username, request.email, request.password)
+        Profile.objects.create_profile(request.username, request.email, request.password, request.inviter)
     return {'errors': errors}
 
 

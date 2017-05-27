@@ -50,6 +50,7 @@ class TestSerializeProfileModels(TestCase):
             'user': 'bela',
             'rank': 'newbie',
             'email_sent': False,
+            'email_attempted': False,
             'annual_points': 0,
             'monthly_points': 0,
             'is_confirmed': False,
