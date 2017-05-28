@@ -22,6 +22,12 @@ class TestUser:
     def request_login(self, login_data):
         return self.client.post(reverse('login_user'), json.dumps(login_data), content_type='application/json')
 
+    def create_confirm_data(self, username, confirmation_code):
+        return {'username': username, 'confirmation_code': confirmation_code}
+
+    def request_email_confirm(self, confirm_data):
+        return self.client.post(reverse('confirm_user'), json.dumps(confirm_data), content_type='application/json')
+
     def request_logout(self):
         return self.client.get(reverse('logout_user'))
 

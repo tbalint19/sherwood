@@ -3,7 +3,7 @@ from _Test.user import TestUser
 from App_Profile.models import *
 import json
 
-@tag('slow')
+@tag('story')
 class TestStory(TestCase):
 
     @classmethod
@@ -55,6 +55,20 @@ class TestStory(TestCase):
         cls.response_12 = player_1.request_login(login_data)
 
         cls.response_13 = player_1.request_logout()
+
+        profile = Profile.objects.get(user_obj__username='Bela12')
+        cls.status_5 = profile.is_confirmed
+        confirm_data = player_1.create_confirm_data('Bela12', profile.confirmation_code)
+        cls.response_14 = player_1.request_email_confirm(confirm_data)
+        profile = Profile.objects.get(user_obj__username='Bela12')
+        cls.status_6 = profile.is_confirmed
+
+        profile = Profile.objects.get(user_obj__username='Kazmer12')
+        cls.status_7 = profile.is_confirmed
+        confirm_data = player_1.create_confirm_data('Kazmer12', profile.confirmation_code + "somethingelse")
+        cls.response_15 = player_1.request_email_confirm(confirm_data)
+        profile = Profile.objects.get(user_obj__username='Kazmer12')
+        cls.status_8 = profile.is_confirmed
 
     def setUp(self):
         self.maxDiff = None
@@ -143,3 +157,29 @@ class TestStory(TestCase):
         response = self.__class__.response_13
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
+
+    def test_user_is_not_confirmed(self):
+        status = self.__class__.status_5
+        self.assertFalse(status)
+
+    def test_user_confirms_email(self):
+        response = self.__class__.response_14
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
+
+    def test_user_is_confirmed(self):
+        status = self.__class__.status_6
+        self.assertTrue(status)
+
+    def test_other_user_is_not_confirmed(self):
+        status = self.__class__.status_7
+        self.assertFalse(status)
+
+    def test_user_confirms_email_wrong_code(self):
+        response = self.__class__.response_15
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
+
+    def test_user_still_not_confirmed(self):
+        status = self.__class__.status_8
+        self.assertFalse(status)

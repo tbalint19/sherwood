@@ -6,13 +6,6 @@ class SignupRequest:
     auth_status = "public"
     request_method = "POST"
 
-    def __init__(self):
-        self.user_data = None
-        self.username_chars = string.ascii_letters + string.digits + "_"
-        self.email_name_chars = string.ascii_letters + string.digits + "."
-        self.email_domain_chars = string.ascii_lowercase + "."
-        self.password_chars = string.ascii_letters + string.digits + "_" + "@" + "-" + "&" + "/" + "*"
-
     def get_from_request(self, request):
         try:
             request.username = json.loads(request.body.decode('utf-8'))['username']
@@ -29,9 +22,12 @@ class LoginRequest:
     request_method = "POST"
 
     def get_from_request(self, request):
-        request.identification = json.loads(request.body.decode('utf-8'))["identification"]
-        request.password = json.loads(request.body.decode('utf-8'))["password"]
-        return request
+        try:
+            request.identification = json.loads(request.body.decode('utf-8'))["identification"]
+            request.password = json.loads(request.body.decode('utf-8'))["password"]
+            return request
+        except:
+            return None
 
 class LogoutRequest:
 
@@ -39,14 +35,20 @@ class LogoutRequest:
     request_method = "GET"
 
     def get_from_request(self, request):
-        return request
+        try:
+            return request
+        except:
+            return None
 
 class EmailAuthRequest:
 
     auth_status = "public"
-    request_method = "GET"
+    request_method = "POST"
 
     def get_from_request(self, request):
-        request.confirmation_code = request.GET.get("confirmation_code")
-        request.username = request.GET.get("username")
-        return request
+        try:
+            request.confirmation_code = json.loads(request.body.decode('utf-8'))["confirmation_code"]
+            request.username = json.loads(request.body.decode('utf-8'))["username"]
+            return request
+        except:
+            return None
