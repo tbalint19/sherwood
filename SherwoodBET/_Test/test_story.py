@@ -2,6 +2,7 @@ from django.test import TestCase, tag
 from _Test.util.user import TestUser
 from _Test.util.data import TestData
 from App_Profile.models import *
+from App_Game.models import *
 import json
 
 @tag('story')
@@ -9,6 +10,17 @@ class TestStory(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        data = TestData()
+
+        data.create_teams()
+        cls.set_up_1 = Team.objects.all()
+
+        data.create_events()
+        cls.set_up_2 = Event.objects.all()
+
+        data.create_matches()
+        cls.set_up_3 = Match.objects.all()
+
         player_1 = TestUser()
 
         login_data = player_1.create_login_data('Bela12', '123456Ab')
@@ -73,6 +85,18 @@ class TestStory(TestCase):
 
     def setUp(self):
         self.maxDiff = None
+
+    def test_teams_created(self):
+        set_up = self.__class__.set_up_1
+        self.assertEqual(len(set_up), 20)
+
+    def test_events_created(self):
+        set_up = self.__class__.set_up_2
+        self.assertEqual(len(set_up), 7)
+
+    def test_matches_created(self):
+        set_up = self.__class__.set_up_3
+        self.assertEqual(len(set_up), 7)
 
     def test_user_tries_login_with_username_without_profile(self):
         response = self.__class__.response_1

@@ -6,8 +6,8 @@ class API:
 
     @classmethod
     def endpoint(cls, Expected):
-        def validate(view):
-            def create_response(request):
+        def set_up(view):
+            def form_response(request):
                 if request.method != Expected.request_method:
                     return JsonResponse({}, status=404)
                 request = Expected().get_from_request(request)
@@ -16,8 +16,8 @@ class API:
                 if not cls.is_authenticated(request, Expected.auth_status):
                     return JsonResponse({}, status=401)
                 return JsonResponse(S.serialize(view(request)))
-            return create_response
-        return validate
+            return form_response
+        return set_up
 
     @staticmethod
     def is_authenticated(request, auth_status):

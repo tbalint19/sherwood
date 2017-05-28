@@ -1,4 +1,5 @@
 from App_Game.models import Team, Event, Match, MatchEvent, Collection, MatchEventOfCollection, RaceTicket
+from datetime import datetime
 
 class TestData:
 
@@ -41,3 +42,9 @@ class TestData:
     def create_events(self):
         for data in self.__class__.events:
             Event(name=data).save()
+
+    def create_matches(self):
+        barca = Team.objects.get(short_name="Fc Barca")
+        real = Team.objects.get(short_name="R Madrid")
+        deadline = datetime.strptime('Jun 1 2025  8:30PM', '%b %d %Y %I:%M%p')
+        Match(home_team_obj=barca, away_team_obj=real, deadline=deadline).save()
