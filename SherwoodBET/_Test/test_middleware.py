@@ -13,7 +13,7 @@ class ModelMock:
             return request
         return None
 
-@tag('fast')
+@tag('fast', 'api')
 class TestAPI(TestCase):
 
     def setUp(self):

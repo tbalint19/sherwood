@@ -1,5 +1,6 @@
 from django.test import TestCase, tag
-from _Test.user import TestUser
+from _Test.util.user import TestUser
+from _Test.util.data import TestData
 from App_Profile.models import *
 import json
 

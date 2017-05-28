@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from App_Profile.models import Profile, Account
 from App_Game.models import *
 
-@tag('fast')
+@tag('fast', 'serializer')
 class TestSerializePrimitives(TestCase):
 
     def test_serialized_string_returns_string(self):
@@ -32,7 +32,7 @@ class TestSerializePrimitives(TestCase):
         dt = datetime.strptime('Jun 1 2005  1:33PM', '%b %d %Y %I:%M%p')
         self.assertEqual(dt.isoformat(), S.serialize(dt))
 
-@tag('fast')
+@tag('fast', 'serializer')
 class TestSerializeProfileModels(TestCase):
 
     @classmethod
@@ -67,7 +67,7 @@ class TestSerializeProfileModels(TestCase):
             'game_money': 1000}
         self.assertEqual(data, S.serialize(self.__class__.user.account))
 
-@tag('fast')
+@tag('fast', 'serializer')
 class TestSerializeGameModels(TestCase):
 
     @classmethod
@@ -155,7 +155,7 @@ class TestSerializeGameModels(TestCase):
         serialized = S.serialize(self.__class__.bet_on_barca_real_from_kazmer)
         self.assertEquals(data, serialized)
 
-@tag('fast')
+@tag('fast', 'serializer')
 class TestSerializeCollections(TestCase):
 
     @classmethod

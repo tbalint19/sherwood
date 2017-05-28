@@ -18,7 +18,7 @@ class UserTicketMock:
     def save(self):
         pass
 
-@tag('fast')
+@tag('fast', 'ranker')
 class TestRanker(TestCase):
 
     def test_ranker_returns_usertickets(self):
