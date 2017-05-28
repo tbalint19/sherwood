@@ -44,7 +44,11 @@ class TestData:
             Event(name=data).save()
 
     def create_matches(self):
-        barca = Team.objects.get(short_name="Fc Barca")
-        real = Team.objects.get(short_name="R Madrid")
-        deadline = datetime.strptime('Jun 1 2025  8:30PM', '%b %d %Y %I:%M%p')
-        Match(home_team_obj=barca, away_team_obj=real, deadline=deadline).save()
+        matches = [
+            ['Fc Barca', 'Sevilla'], ['Eibar', 'R Madrid'], ['Espanyol', 'Betis'], ['Granada', 'Villareal'],
+            ['Las Palmas', 'A Madrid'], ['Valencia', 'Celta'], ['A Bilbao', 'Gijon'],]
+        for pair in matches:
+            home_team = Team.objects.get(short_name=pair[0])
+            away_team = Team.objects.get(short_name=pair[1])
+            deadline = datetime.strptime('Mar 1 2025  8:30PM', '%b %d %Y %I:%M%p')
+            Match(home_team_obj=home_team, away_team_obj=away_team, deadline=deadline).save()
