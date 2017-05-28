@@ -5,25 +5,21 @@ from App_Profile.views import signup_user, login_user, logout_user
 import random
 import json
 
-class TestPlayer:
+class TestUser:
 
-    def __init__(self, username="Kazmer12", email="kaz@mer.hu", password="123456Ka", created=True, logged_in=True):
+    def __init__(self):
         self.client = Client()
-        self.username = username
-        self.email = email
-        self.password = password
-        if created:
-            Profile.objects.create_profile(username, email, password, "bela12")
-        if logged_in:
-            self.client.login(username=username, password=password)
 
-    def request_singnup(self):
-        signup_data = {'username': self.username, 'email': self.email, 'password': self.password, 'inviter': "bela12"}
+    def create_signup_data(self, username, email, password, inviter):
+        return {'username': username, 'email': email, 'password': password, 'inviter': inviter}
+
+    def request_singnup(self, signup_data):
         return self.client.post(reverse('signup_user'), json.dumps(signup_data), content_type='application/json')
 
-    def request_login(self, credential):
-        login_data = {'password': self.password}
-        login_data['identification'] = getattr(self, credential)
+    def create_login_data(self, credential, password):
+        return {'identification': credential, 'password': password}
+
+    def request_login(self, login_data):
         return self.client.post(reverse('login_user'), json.dumps(login_data), content_type='application/json')
 
     def request_logout(self):

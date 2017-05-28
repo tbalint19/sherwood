@@ -1,91 +1,144 @@
 from django.test import TestCase
+from _Test.user import TestUser
+from App_Profile.models import *
+import json
 
 class TestStory(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        pass
-        # create test data
-        # - teams
-        # - matches
-        # - events
-        # - match-events
-        # - collections
-        # - match-events of collections
-        # - race tickets
+        player_1 = TestUser()
 
-        # query database for game data
+        login_data = player_1.create_login_data('Bela12', '123456Ab')
+        cls.response_1 = player_1.request_login(login_data)
 
-        # user authentication
-        # - user login with not existing username
-        # - user login with not existing email
-        # - user signup with valid credentials
-        # - user signup with used username
-        # - user signup with used email
-        # - user login with username - wrong password
-        # - user login with email - wrong password
-        # - user successful login
+        login_data = player_1.create_login_data('bela@bela.hu', '123456Ab')
+        cls.response_2 = player_1.request_login(login_data)
 
-        # activate profile
+        signup_data = player_1.create_signup_data('Bela12', 'bela@bela.hu', '123456Ab', None)
+        cls.response_3 = player_1.request_singnup(signup_data)
 
-        # query user profile data
-        # query user account data
+        cls.status_1 = {'users': len(Profile.objects.all()), 'invitations': len(Invitation.objects.all())}
 
-        # start playing
-        # - get offer
-        # - get one race ticket - not existing userticket
-        # - getting the same ticket again (no duplicate)
-        # - place bet (filling ticket)
-        # - get offer again (played race tickets exist)
-        # - get the filled ticket (received with the previous data)
-        # - modify the ticket - place bet again
-        # - play the same collection, but with other race ticket
-        # - play an other collection - a deep analysis this time
+        signup_data = player_1.create_signup_data('Bela12', 'bela@lajos.hu', '123456Ab', None)
+        cls.response_4 = player_1.request_singnup(signup_data)
 
-        # create 45 robots
+        signup_data = player_1.create_signup_data('Lajos12', 'bela@bela.hu', '123456Ab', None)
+        cls.response_5 = player_1.request_singnup(signup_data)
 
-        # matches start
-        # - get user tickets - all 3 modifiable
-        # - get one with matches
-        # - get one with deep analysis
-        # - one match without additional events
-        # - calculate points
-        # - get user tickets again
-        # - get the started one again
-        # - a new match starts
-        # - get it again...
-        # - the matches change
-        # - get it again...
-        # - all matches finish
+        signup_data = player_1.create_signup_data('Bela12', 'bela@bela.hu', '123456Ab', None)
+        cls.response_6 = player_1.request_singnup(signup_data)
 
-        #  wall
-        # - test_user_requests_stories_without_filter
-        # - test_user_requests_stories_about_announcements
-        # - test_user_requests_stories_about_matches
-        # - test_user_requests_stories_about_friends
-        # - test_user_requests_own_stories
-        # - test_user_shares_story
-        # - test_user_comments_on_story
-        # - test_user_likes_story
+        cls.status_2 = {'users': len(Profile.objects.all()), 'invitations': len(Invitation.objects.all())}
 
-        # community
-        # - test_user_searches_user_by_existing_username
-        # - test_user_searches_user_by_not_existing_username
-        # - test_user_searches_user_by_existing_email
-        # - test_user_searches_user_by_not_existing_email
-        # - test_user_sends_friend_request_for_user
-        # - test_user_gets_active_friend_requests
-        # - test_user_confirms_friend_request
-        # - test_user_gets_preferences
-        # - test_user_sets_preferences
-        # - test_user_gets_questionnaires
-        # - test_user_gets_questionnaire
-        # - test_user_fills_questionnaire
-        # - test_user_writes_opinion
+        signup_data = player_1.create_signup_data('Lajos12', 'lajos@lajos.hu', '123456Ab', 'Bela12')
+        cls.response_7 = player_1.request_singnup(signup_data)
 
+        cls.status_3 = {'users': len(Profile.objects.all()), 'invitations': len(Invitation.objects.all())}
+
+        signup_data = player_1.create_signup_data('Kazmer12', 'kazmer@kazmer.hu', '123456Ab', 'Otto12')
+        cls.response_8 = player_1.request_singnup(signup_data)
+
+        cls.status_4 = {'users': len(Profile.objects.all()), 'invitations': len(Invitation.objects.all())}
+
+        login_data = player_1.create_login_data('Bela12', '123456Ab')
+        cls.response_9 = player_1.request_login(login_data)
+
+        login_data = player_1.create_login_data('bela@bela.hu', '123456Ab')
+        cls.response_10 = player_1.request_login(login_data)
+
+        login_data = player_1.create_login_data('Bela12', '123456ACDEFg')
+        cls.response_11 = player_1.request_login(login_data)
+
+        login_data = player_1.create_login_data('bela@bela.hu', '123456ACDEFg')
+        cls.response_12 = player_1.request_login(login_data)
+
+        cls.response_13 = player_1.request_logout()
 
     def setUp(self):
-        pass
+        self.maxDiff = None
 
-    def test_story(self):
-        pass
+    def test_user_tries_login_with_username_without_profile(self):
+        response = self.__class__.response_1
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
+
+    def test_user_tries_login_with_email_without_profile(self):
+        response = self.__class__.response_2
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
+
+    def test_user_signup_with_unoccupied_data(self):
+        response = self.__class__.response_3
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': []})
+
+    def test_one_user_no_invitation(self):
+        status = self.__class__.status_1
+        self.assertEqual(status['users'], 1)
+        self.assertEqual(status['invitations'], 0)
+
+    def test_user_signup_with_occupied_username(self):
+        response = self.__class__.response_4
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': ["username"]})
+
+    def test_user_signup_with_occupied_email(self):
+        response = self.__class__.response_5
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': ["email"]})
+
+    def test_user_signup_with_occupied_username_and_email(self):
+        response = self.__class__.response_6
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': ["username", "email"]})
+
+    def test_one_user_no_invitation_after_unsuccesful_attempts(self):
+        status = self.__class__.status_2
+        self.assertEqual(status['users'], 1)
+        self.assertEqual(status['invitations'], 0)
+
+    def test_user_signup_with_valid_inviter(self):
+        response = self.__class__.response_7
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': []})
+
+    def test_two_user_one_invitation(self):
+        status = self.__class__.status_3
+        self.assertEqual(status['users'], 2)
+        self.assertEqual(status['invitations'], 1)
+
+    def test_user_signup_with_invalid_inviter(self):
+        response = self.__class__.response_8
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'errors': []})
+
+    def test_three_user_one_invitation(self):
+        status = self.__class__.status_4
+        self.assertEqual(status['users'], 3)
+        self.assertEqual(status['invitations'], 1)
+
+    def test_user_tries_login_with_valid_credentials_username(self):
+        response = self.__class__.response_9
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
+
+    def test_user_tries_login_with_valid_credentials_email(self):
+        response = self.__class__.response_10
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
+
+    def test_user_tries_login_with_username_and_wrong_password(self):
+        response = self.__class__.response_11
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
+
+    def test_user_tries_login_with_email_and_wrong_password(self):
+        response = self.__class__.response_12
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
+
+    def test_user_logout(self):
+        response = self.__class__.response_13
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})

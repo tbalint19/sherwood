@@ -35,7 +35,7 @@ class TestSerializeProfileModels(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = Profile.objects.create_profile(username="bela", password="123456Ab", email="be@la.hu")
+        cls.user = Profile.objects.create_profile("bela", "be@la.hu", "123456Ab", None)
 
     def setUp(self):
         self.maxDiff = None
@@ -69,7 +69,7 @@ class TestSerializeGameModels(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.player = Profile.objects.create_profile(username="Kazmer12", password="123456Ab", email="kaz@mer.hu")
+        cls.player = Profile.objects.create_profile("Kazmer12", "kaz@mer.hu", "123456Ab", None)
         cls.barca = Team(name="F.C. Barcelona", short_name="FC Barca", stadium="Camp Nou")
         cls.barca.save()
         cls.rmadird = Team(name="Real Madrid C.F.", short_name="R Madrid", stadium="Bernabeu")
@@ -156,9 +156,9 @@ class TestSerializeCollections(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user1 = Profile.objects.create_profile(username="bela", password="123456Ab", email="be@la.hu")
-        cls.user2 = Profile.objects.create_profile(username="lajos", password="123456Ab", email="la@jos.hu")
-        cls.user3 = Profile.objects.create_profile(username="kazmer", password="123456Ab", email="kaz@mer.hu")
+        cls.user1 = Profile.objects.create_profile("bela", "be@la.hu", "123456Ab", None)
+        cls.user2 = Profile.objects.create_profile("lajos", "la@jos.hu", "123456Ab", None)
+        cls.user3 = Profile.objects.create_profile("kazmer", "kaz@mer.hu", "123456Ab", None)
 
     def setUp(self):
         self.maxDiff = None

@@ -6,11 +6,12 @@ import string
 
 class ProfileManager(models.Manager):
 
-    def create_profile(self, username, email, password, inviter=None):
+    def create_profile(self, username, email, password, inviter):
         user = User.objects.create_user(username=username, email=email, password=password)
         Account(user_obj=user).save()
-        Profile(user_obj=user).set_confirmation_code().save()
-        Invitation.objects.create_if_possible(user, inviter)
+        profile = Profile(user_obj=user).set_confirmation_code()
+        profile.save()
+        Invitation.objects.create_if_possible(profile, inviter)
         return user
 
     def check_if_possible(self, username, email):
@@ -90,12 +91,12 @@ class InvitationManager(models.Manager):
 
     def create_if_possible(self, invited, inviter):
         try:
-            user = User.objects.get(username=inviter)
+            profile = User.objects.get(username=inviter).profile
         except User.DoesNotExist:
-            user = None
-        if user is not None:
-            Invitation(inviter=user, invited=invited).save()
-        return user is not None
+            profile = None
+        if profile is not None:
+            Invitation(inviter=profile, invited=invited).save()
+        return profile is not None
 
 
 class Invitation(models.Model):
