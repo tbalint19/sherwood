@@ -11,19 +11,18 @@ class TestStory(TestCase):
     @classmethod
     def setUpTestData(cls):
         data = TestData()
-
-        data.create_teams()
-        cls.set_up_1 = Team.objects.all()
-
-        data.create_events()
-        cls.set_up_2 = Event.objects.all()
-
-        data.create_matches()
-        cls.set_up_3 = Match.objects.all()
+        data.create_teams();                    cls.set_up_1 = len(Team.objects.all())
+        data.create_events();                   cls.set_up_2 = len(Event.objects.all())
+        data.create_matches();                  cls.set_up_3 = len(Match.objects.all())
+        data.create_final_result_events();      cls.set_up_4 = len(MatchEvent.objects.all())
+        data.create_derby_events();             cls.set_up_5 = len(MatchEvent.objects.all())
+        data.create_collections();              cls.set_up_6 = len(Collection.objects.all())
+        data.add_matches_to_collection();       cls.set_up_7 = len(MatchEventOfCollection.objects.all())
+        data.add_matches_to_collection();       cls.set_up_8 = len(MatchEventOfCollection.objects.all())
+        data.create_race_tickets();             cls.set_up_9 = len(RaceTicket.objects.all())
 
         player_1 = TestUser()
-
-        login_data = player_1.create_login_data('Bela12', '123456Ab')
+        login_data = player_1.create_login_data('Bela12', '123456Ab');
         cls.response_1 = player_1.request_login(login_data)
 
         login_data = player_1.create_login_data('bela@bela.hu', '123456Ab')
@@ -57,9 +56,7 @@ class TestStory(TestCase):
 
         login_data = player_1.create_login_data('Bela12', '123456Ab')
         cls.response_9 = player_1.request_login(login_data)
-
-        login_data = player_1.create_login_data('bela@bela.hu', '123456Ab')
-        cls.response_10 = player_1.request_login(login_data)
+        cls.response_10 = player_1.request_logout()
 
         login_data = player_1.create_login_data('Bela12', '123456ACDEFg')
         cls.response_11 = player_1.request_login(login_data)
@@ -67,7 +64,8 @@ class TestStory(TestCase):
         login_data = player_1.create_login_data('bela@bela.hu', '123456ACDEFg')
         cls.response_12 = player_1.request_login(login_data)
 
-        cls.response_13 = player_1.request_logout()
+        login_data = player_1.create_login_data('bela@bela.hu', '123456Ab')
+        cls.response_13 = player_1.request_login(login_data)
 
         profile = Profile.objects.get(user_obj__username='Bela12')
         cls.status_5 = profile.is_confirmed
@@ -88,15 +86,39 @@ class TestStory(TestCase):
 
     def test_teams_created(self):
         set_up = self.__class__.set_up_1
-        self.assertEqual(len(set_up), 20)
+        self.assertEqual(set_up, 20)
 
     def test_events_created(self):
         set_up = self.__class__.set_up_2
-        self.assertEqual(len(set_up), 7)
+        self.assertEqual(set_up, 7)
 
     def test_matches_created(self):
         set_up = self.__class__.set_up_3
-        self.assertEqual(len(set_up), 7)
+        self.assertEqual(set_up, 7)
+
+    def test_match_events_created(self):
+        set_up = self.__class__.set_up_4
+        self.assertEqual(set_up, 7)
+
+    def test_derby_events_created(self):
+        set_up = self.__class__.set_up_5
+        self.assertEqual(set_up, 13)
+
+    def test_collections_created(self):
+        set_up = self.__class__.set_up_6
+        self.assertEqual(set_up, 2)
+
+    def test_matches_added_to_collection(self):
+        set_up = self.__class__.set_up_7
+        self.assertEqual(set_up, 7)
+
+    def test_events_added_to_collection(self):
+        set_up = self.__class__.set_up_8
+        self.assertEqual(set_up, 14)
+
+    def test_race_tickets_created(self):
+        set_up = self.__class__.set_up_9
+        self.assertEqual(set_up, 12)
 
     def test_user_tries_login_with_username_without_profile(self):
         response = self.__class__.response_1
@@ -163,7 +185,7 @@ class TestStory(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
 
-    def test_user_tries_login_with_valid_credentials_email(self):
+    def test_user_logout(self):
         response = self.__class__.response_10
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
@@ -178,7 +200,7 @@ class TestStory(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': False})
 
-    def test_user_logout(self):
+    def test_user_tries_login_with_valid_credentials_email(self):
         response = self.__class__.response_13
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('utf-8')), {'is_successful': True})
