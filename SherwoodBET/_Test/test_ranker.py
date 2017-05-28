@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from _Jobs.update_standings import Ranker
 import random
 
@@ -18,6 +18,7 @@ class UserTicketMock:
     def save(self):
         pass
 
+@tag('fast')
 class TestRanker(TestCase):
 
     def test_ranker_returns_usertickets(self):

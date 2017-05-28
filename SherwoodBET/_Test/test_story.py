@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from _Test.user import TestUser
 from App_Profile.models import *
 import json
 
+@tag('slow')
 class TestStory(TestCase):
 
     @classmethod

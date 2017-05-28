@@ -1,5 +1,5 @@
 from django.contrib.auth.models import AnonymousUser, User
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, tag
 from _Middleware import API
 import json
 
@@ -13,6 +13,7 @@ class ModelMock:
             return request
         return None
 
+@tag('fast')
 class TestAPI(TestCase):
 
     def setUp(self):
