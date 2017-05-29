@@ -91,27 +91,12 @@ class MatchEventOfCollection(models.Model):
     def __str__(self):
         return str(self.match_event_obj) + " of " + str(self.collection_obj)
 
-class RaceTicketManager(models.Manager):
-
-    def get_for_collection(self, collection):
-        race_tickets = []
-        for is_prof in [True, False]:
-            for amount in [1, 10, 100]:
-                try:
-                    race_tickets.append(self.get(
-                        collection_obj=collection, bet_amount=amount, is_professional=is_prof))
-                except RaceTicket.DoesNotExist:
-                    continue
-        return race_tickets
-
 class RaceTicket(models.Model):
 
     collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='race_tickets')
     is_professional = models.BooleanField()
     bet_amount = models.IntegerField()
     number_of_competitors = models.IntegerField(default=0)
-
-    objects = RaceTicketManager()
 
     def __str__(self):
         return str(self.collection_obj) + " / " + str(self.bet_amount)

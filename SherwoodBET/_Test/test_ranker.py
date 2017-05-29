@@ -185,7 +185,7 @@ class TestRanker(TestCase):
         self.assertEqual(ranked[38].payoff, 0)
         self.assertEqual(ranked[39].payoff, 0)
 
-    def test_less_than_20_sets_all_payoff_to_1(self):
+    def test_full(self):
         user_tickets = [UserTicketMock(x, random.randint(0, 1000)) for x in range(312)]
         ranker = Ranker(user_tickets)
         ranked = ranker.rank()

@@ -81,6 +81,8 @@ class TestStory(TestCase):
         profile = Profile.objects.get(user_obj__username='Kazmer12')
         cls.status_8 = profile.is_confirmed
 
+        cls.response_16 = player_1.request_offer()
+
     def setUp(self):
         self.maxDiff = None
 
@@ -230,3 +232,58 @@ class TestStory(TestCase):
     def test_user_still_not_confirmed(self):
         status = self.__class__.status_8
         self.assertFalse(status)
+
+    def test_offer_recieved_without_played_race_tickets(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            "played_race_tickets" in response_data and
+            "matches_offer" in response_data and
+            "deep_analysis_offer" in response_data)
+
+    def test_no_played_race_tickets_in_offer(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["played_race_tickets"]), 0)
+
+    def test_offer_has_1_matches_offer(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["matches_offer"]), 1)
+
+    def test_offer_has_1_deep_analysis_offer(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["deep_analysis_offer"]), 1)
+
+    def test_offer_has_collection_info(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(
+            "collection" in response_data["matches_offer"][0] and
+            "collection" in response_data["deep_analysis_offer"][0])
+
+    def test_offer_has_race_ticket_info(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(
+            "race_tickets" in response_data["matches_offer"][0] and
+            "race_tickets" in response_data["deep_analysis_offer"][0])
+
+    def test_offer_has_6_matches_race_ticket(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["matches_offer"][0]["race_tickets"]), 6)
+
+    def test_offer_has_6_deep_analysis_race_ticket(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["deep_analysis_offer"][0]["race_tickets"]), 6)
+
+    def test_offer_has_match_event_info(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(
+            "match_events" in response_data["matches_offer"][0] and
+            "match_events" in response_data["deep_analysis_offer"][0])

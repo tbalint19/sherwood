@@ -3,7 +3,7 @@ from App_Game.models import *
 class Ranker:
     def __init__(self, user_tickets):
         self.user_tickets = sorted(user_tickets)
-        self.payoff_groups = self.create_payoff_groups()
+        self.payoff_groups = self.create_payoff_groups(len(self.user_tickets))
 
     def rank(self):
         self.set_ranking()
@@ -16,8 +16,7 @@ class Ranker:
             user_ticket.rank = index + 1
             user_ticket.save()
 
-    def create_payoff_groups(self):
-        number_of_tickets = len(self.user_tickets)
+    def create_payoff_groups(self, number_of_tickets):
         number_of_draws = int(number_of_tickets % 20)
         size_of_group = int((number_of_tickets - number_of_draws)/20)
         payoff_groups = [["empty_spot" for x in range(size_of_group)] for x in range(21)]
@@ -44,7 +43,8 @@ def update_standings():
         collection.set_live_if_needed()
     for collection in Collection.objects.filter(status=Collection.LIVE):
         collection.set_finished_if_needed()
-        for race_ticket in RaceTicket.objects.get_for_collection(collection):
-            for user_ticket in race_ticket.user_tickets.all():
+        for race_ticket in collection.race_tickets:
+            user_tickets = race_ticket.user_tickets.all()
+            for user_ticket in user_tickets:
                 user_ticket.update_points()
-            race_ticket.sort_related_user_tickets()
+            Ranker(user_tickets).rank()
