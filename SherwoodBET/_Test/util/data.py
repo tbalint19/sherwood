@@ -76,7 +76,7 @@ class TestData:
 
     def add_events_to_collection(self):
         collection = Collection.objects.get(number=174502)
-        match_events = MatchEvent.objects.filter(match_event_obj__home_team_obj__short_name='Fc Barca')
+        match_events = MatchEvent.objects.filter(match_obj__home_team_obj__short_name='Fc Barca')
         for match_event in match_events:
             MatchEventOfCollection(match_event_obj=match_event, collection_obj=collection).save()
 

@@ -34,8 +34,14 @@ class TestUser:
     def request_offer(self):
         return self.client.get(reverse('get_offer'))
 
+    def choose_matches_ticket(self, offer):
+        race_tickets = offer["matches_offer"][0]["race_tickets"]
+        for race_ticket in race_tickets:
+            if race_ticket["is_professional"] and race_ticket["bet_amount"] == 100:
+                return race_ticket["id"]
+
     def request_user_ticket(self, race_ticket_id):
-        return self.client.get('/game/api/get_ticket?race_ticket_id=' + race_ticket_id)
+        return self.client.get('/game/api/get_ticket?race_ticket_id=' + str(race_ticket_id))
 
     def play(self, game_data):
         choices = [

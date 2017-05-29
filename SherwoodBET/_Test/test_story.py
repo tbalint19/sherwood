@@ -1,6 +1,7 @@
 from django.test import TestCase, tag
 from _Test.util.user import TestUser
 from _Test.util.data import TestData
+from _Test.util.test_data.first_offer import first_offer
 from App_Profile.models import *
 from App_Game.models import *
 import json
@@ -11,15 +12,15 @@ class TestStory(TestCase):
     @classmethod
     def setUpTestData(cls):
         data = TestData()
-        data.create_teams();                    cls.set_up_1 = len(Team.objects.all())
-        data.create_events();                   cls.set_up_2 = len(Event.objects.all())
-        data.create_matches();                  cls.set_up_3 = len(Match.objects.all())
-        data.create_final_result_events();      cls.set_up_4 = len(MatchEvent.objects.all())
-        data.create_derby_events();             cls.set_up_5 = len(MatchEvent.objects.all())
-        data.create_collections();              cls.set_up_6 = len(Collection.objects.all())
-        data.add_matches_to_collection();       cls.set_up_7 = len(MatchEventOfCollection.objects.all())
-        data.add_matches_to_collection();       cls.set_up_8 = len(MatchEventOfCollection.objects.all())
-        data.create_race_tickets();             cls.set_up_9 = len(RaceTicket.objects.all())
+        data.create_teams();                    cls.set_up_1 = [obj for obj in Team.objects.all()]
+        data.create_events();                   cls.set_up_2 = [obj for obj in Event.objects.all()]
+        data.create_matches();                  cls.set_up_3 = [obj for obj in Match.objects.all()]
+        data.create_final_result_events();      cls.set_up_4 = [obj for obj in MatchEvent.objects.all()]
+        data.create_derby_events();             cls.set_up_5 = [obj for obj in MatchEvent.objects.all()]
+        data.create_collections();              cls.set_up_6 = [obj for obj in Collection.objects.all()]
+        data.add_matches_to_collection();       cls.set_up_7 = [obj for obj in MatchEventOfCollection.objects.all()]
+        data.add_events_to_collection();       cls.set_up_8 = [obj for obj in MatchEventOfCollection.objects.all()]
+        data.create_race_tickets();             cls.set_up_9 = [obj for obj in RaceTicket.objects.all()]
 
         player_1 = TestUser()
         login_data = player_1.create_login_data('Bela12', '123456Ab');
@@ -83,44 +84,96 @@ class TestStory(TestCase):
 
         cls.response_16 = player_1.request_offer()
 
+        cls.status_9 = UserTicket.objects.all().exists()
+
+        race_ticket_id = player_1.choose_matches_ticket(json.loads(cls.response_16.content.decode('utf-8')))
+        cls.response_17 = player_1.request_user_ticket(race_ticket_id)
+
+        cls.status_10 = UserTicket.objects.all().exists()
+
     def setUp(self):
         self.maxDiff = None
 
     def test_teams_created(self):
         set_up = self.__class__.set_up_1
-        self.assertEqual(set_up, 20)
+        self.assertEqual(len(set_up), 20)
+
+    def test_teams_are_unique(self):
+        set_up = self.__class__.set_up_1
+        teams = set([str(team) for team in set_up])
+        self.assertEqual(len(set_up), len(teams))
 
     def test_events_created(self):
         set_up = self.__class__.set_up_2
-        self.assertEqual(set_up, 7)
+        self.assertEqual(len(set_up), 7)
+
+    def test_events_are_unique(self):
+        set_up = self.__class__.set_up_2
+        events = set([str(event) for event in set_up])
+        self.assertEqual(len(set_up), len(events))
 
     def test_matches_created(self):
         set_up = self.__class__.set_up_3
-        self.assertEqual(set_up, 7)
+        self.assertEqual(len(set_up), 7)
+
+    def test_matches_are_unique(self):
+        set_up = self.__class__.set_up_3
+        matches = set([str(match) for match in set_up])
+        self.assertEqual(len(set_up), len(matches))
 
     def test_match_events_created(self):
         set_up = self.__class__.set_up_4
-        self.assertEqual(set_up, 7)
+        self.assertEqual(len(set_up), 7)
+
+    def test_match_events_are_unique(self):
+        set_up = self.__class__.set_up_4
+        match_events = set([str(match_event) for match_event in set_up])
+        self.assertEqual(len(set_up), len(match_events))
 
     def test_derby_events_created(self):
         set_up = self.__class__.set_up_5
-        self.assertEqual(set_up, 13)
+        self.assertEqual(len(set_up), 13)
+
+    def test_match_events_are_unique_after_update(self):
+        set_up = self.__class__.set_up_5
+        match_events = set([str(match_event) for match_event in set_up])
+        self.assertEqual(len(set_up), len(match_events))
 
     def test_collections_created(self):
         set_up = self.__class__.set_up_6
-        self.assertEqual(set_up, 2)
+        self.assertEqual(len(set_up), 2)
+
+    def test_collections_are_unique(self):
+        set_up = self.__class__.set_up_6
+        collections = set([str(collection) for collection in set_up])
+        self.assertEqual(len(set_up), len(collections))
 
     def test_matches_added_to_collection(self):
         set_up = self.__class__.set_up_7
-        self.assertEqual(set_up, 7)
+        self.assertEqual(len(set_up), 7)
+
+    def test_matches_of_collections_are_unique(self):
+        set_up = self.__class__.set_up_7
+        objs = set([str(obj) for obj in set_up])
+        self.assertEqual(len(set_up), len(objs))
 
     def test_events_added_to_collection(self):
         set_up = self.__class__.set_up_8
-        self.assertEqual(set_up, 14)
+        self.assertEqual(len(set_up), 14)
+
+    def test_events_of_collections_are_unique(self):
+        set_up = self.__class__.set_up_8
+        objs = set([str(obj) for obj in set_up])
+        self.assertEqual(len(set_up), len(objs))
 
     def test_race_tickets_created(self):
         set_up = self.__class__.set_up_9
-        self.assertEqual(set_up, 12)
+        self.assertEqual(len(set_up), 12)
+
+    def test_race_tickets_are_unique(self):
+        set_up = self.__class__.set_up_9
+        objs = set([str(obj) for obj in set_up])
+        self.assertEqual(len(set_up), len(objs))
 
     def test_user_tries_login_with_username_without_profile(self):
         response = self.__class__.response_1
@@ -287,3 +340,40 @@ class TestStory(TestCase):
         self.assertTrue(
             "match_events" in response_data["matches_offer"][0] and
             "match_events" in response_data["deep_analysis_offer"][0])
+
+    def test_offer_has_7_match_events(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(response_data["matches_offer"][0]["match_events"]), 7)
+        self.assertEqual(len(response_data["deep_analysis_offer"][0]["match_events"]), 7)
+
+    def test_offer_has_match_info_in_match_event_info(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(
+            "match" in response_data["deep_analysis_offer"][0]["match_events"][0] and
+            "match" in response_data["matches_offer"][0]["match_events"][0])
+
+    def test_offer_has_event_info_in_match_event_info(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue(
+            "event" in response_data["deep_analysis_offer"][0]["match_events"][0] and
+            "event" in response_data["matches_offer"][0]["match_events"][0])
+
+    def test_full_offer_first(self):
+        response = self.__class__.response_16
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data, first_offer)
+
+    def test_user_tickets_do_not_exist(self):
+        status = self.__class__.status_9
+        self.assertFalse(status)
+
+    def test_choosing_first_not_existing_user_ticket(self):
+        response = self.__class__.response_17
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_ticket_exists(self):
+        status = self.__class__.status_10
+        self.assertTrue(status)

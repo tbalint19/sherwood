@@ -6,7 +6,7 @@ urlpatterns = [
 
      # tickets
     url(r'^api/get_offer', views.get_offer, name='get_offer'),
-    # url(r'^api/get_ticket', views.get_ticket, name='get_ticket'),
+    url(r'^api/get_ticket', views.get_ticket, name='get_ticket'),
 
     # bet
     # url(r'^api/place_bet', views.place_bet, name='place_bet'),

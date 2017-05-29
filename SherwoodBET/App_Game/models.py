@@ -99,7 +99,7 @@ class RaceTicket(models.Model):
     number_of_competitors = models.IntegerField(default=0)
 
     def __str__(self):
-        return str(self.collection_obj) + " / " + str(self.bet_amount)
+        return str(self.collection_obj) + " / " + str(self.bet_amount) + ("$" if self.is_professional else "SC")
 
 class UserTicketManager(models.Manager):
 
