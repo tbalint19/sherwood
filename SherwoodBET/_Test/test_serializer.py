@@ -144,14 +144,14 @@ class TestSerializeGameModels(TestCase):
 
     def test_serialize_user_ticket(self):
         data = {'id': self.__class__.user_ticket_of_kazmer.id, 'paid': False,
-            'payoff': None, 'points': 1, 'race_ticket': '#171819: PD 15th round / 1', 'rank': None, 'user': 'Kazmer12'}
+            'payoff': None, 'points': 1, 'race_ticket': '#171819: PD 15th round / 1$', 'rank': None, 'user': 'Kazmer12'}
         serialized = S.serialize(self.__class__.user_ticket_of_kazmer)
         self.assertEquals(data, serialized)
 
     def test_serialize_bet(self):
         data = {'away': 0, 'draw': 0, 'home': 0, 'id': self.__class__.bet_on_barca_real_from_kazmer.id,
             'match_event': 'FC Barca - R Madrid / Final result', 'result': 1,
-            'user_ticket': "Kazmer12's #171819: PD 15th round / 1"}
+            'user_ticket': "Kazmer12's #171819: PD 15th round / 1$"}
         serialized = S.serialize(self.__class__.bet_on_barca_real_from_kazmer)
         self.assertEquals(data, serialized)
 

@@ -20,7 +20,7 @@ def get_ticket(request):
         "user_ticket": user_ticket,
         "related_bets": user_ticket.get_or_create_related_bets()}
 
-
+        
 @API.endpoint(BetRequest)
 def place_bet(request):
     request.user.account.pay_user_ticket_if_needed_and_possible(request.user_ticket)

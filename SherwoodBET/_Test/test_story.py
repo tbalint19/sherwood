@@ -12,15 +12,15 @@ class TestStory(TestCase):
     @classmethod
     def setUpTestData(cls):
         data = TestData()
-        data.create_teams();                    cls.set_up_1 = [obj for obj in Team.objects.all()]
-        data.create_events();                   cls.set_up_2 = [obj for obj in Event.objects.all()]
-        data.create_matches();                  cls.set_up_3 = [obj for obj in Match.objects.all()]
-        data.create_final_result_events();      cls.set_up_4 = [obj for obj in MatchEvent.objects.all()]
-        data.create_derby_events();             cls.set_up_5 = [obj for obj in MatchEvent.objects.all()]
-        data.create_collections();              cls.set_up_6 = [obj for obj in Collection.objects.all()]
-        data.add_matches_to_collection();       cls.set_up_7 = [obj for obj in MatchEventOfCollection.objects.all()]
-        data.add_events_to_collection();       cls.set_up_8 = [obj for obj in MatchEventOfCollection.objects.all()]
-        data.create_race_tickets();             cls.set_up_9 = [obj for obj in RaceTicket.objects.all()]
+        data.create_teams();                    cls.set_up_1 = list(Team.objects.all())
+        data.create_events();                   cls.set_up_2 = list(Event.objects.all())
+        data.create_matches();                  cls.set_up_3 = list(Match.objects.all())
+        data.create_final_result_events();      cls.set_up_4 = list(MatchEvent.objects.all())
+        data.create_derby_events();             cls.set_up_5 = list(MatchEvent.objects.all())
+        data.create_collections();              cls.set_up_6 = list(Collection.objects.all())
+        data.add_matches_to_collection();       cls.set_up_7 = list(MatchEventOfCollection.objects.all())
+        data.add_events_to_collection();       cls.set_up_8 = list(MatchEventOfCollection.objects.all())
+        data.create_race_tickets();             cls.set_up_9 = list(RaceTicket.objects.all())
 
         player_1 = TestUser()
         login_data = player_1.create_login_data('Bela12', '123456Ab');
@@ -86,10 +86,15 @@ class TestStory(TestCase):
 
         cls.status_9 = UserTicket.objects.all().exists()
 
-        race_ticket_id = player_1.choose_matches_ticket(json.loads(cls.response_16.content.decode('utf-8')))
+        offer = json.loads(cls.response_16.content.decode('utf-8'))
+        race_ticket_id = player_1.choose_matches_ticket(offer, "matches_offer", False, 100)
         cls.response_17 = player_1.request_user_ticket(race_ticket_id)
 
         cls.status_10 = UserTicket.objects.all().exists()
+
+        cls.response_18 = player_1.request_user_ticket(race_ticket_id)
+
+        cls.status_11 = list(UserTicket.objects.all())
 
     def setUp(self):
         self.maxDiff = None
@@ -370,10 +375,38 @@ class TestStory(TestCase):
         status = self.__class__.status_9
         self.assertFalse(status)
 
-    def test_choosing_first_not_existing_user_ticket(self):
+    def test_choosing_first_not_existing_user_ticket_response_arrives(self):
         response = self.__class__.response_17
         self.assertEqual(response.status_code, 200)
+
+    def test_user_ticket_to_fill_has_userticket_info(self):
+        response = self.__class__.response_17
+        self.assertTrue("user_ticket" in json.loads(response.content.decode('utf-8')))
+
+    def test_user_ticket_to_fill_has_bet_info(self):
+        response = self.__class__.response_17
+        self.assertTrue("related_bets" in json.loads(response.content.decode('utf-8')))
+
+    def test_7_bets(self):
+        response = self.__class__.response_17
+        response_data = json.loads(response.content.decode('utf-8'))
+        bets = response_data["related_bets"]
+        self.assertEqual(len(bets), 7)
+
+    def test_bet_has_all_related_info(self):
+        response = self.__class__.response_17
+        response_data = json.loads(response.content.decode('utf-8'))
+        bets = response_data["related_bets"]
+        self.assertTrue("bet_data" in bets[0] and "match_data" in bets[0] and "event_data" in bets[0])
 
     def test_user_ticket_exists(self):
         status = self.__class__.status_10
         self.assertTrue(status)
+
+    def test_choosing_first_existing_user_ticket_response_arrives(self):
+        response = self.__class__.response_18
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_ticket_not_recreated(self):
+        status = self.__class__.status_11
+        self.assertEqual(len(status), 1)

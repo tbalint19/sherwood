@@ -34,10 +34,10 @@ class TestUser:
     def request_offer(self):
         return self.client.get(reverse('get_offer'))
 
-    def choose_matches_ticket(self, offer):
-        race_tickets = offer["matches_offer"][0]["race_tickets"]
+    def choose_matches_ticket(self, offer, offer_type, is_professional, bet_amount):
+        race_tickets = offer[offer_type][0]["race_tickets"]
         for race_ticket in race_tickets:
-            if race_ticket["is_professional"] and race_ticket["bet_amount"] == 100:
+            if race_ticket["is_professional"] == is_professional and race_ticket["bet_amount"] == bet_amount:
                 return race_ticket["id"]
 
     def request_user_ticket(self, race_ticket_id):
