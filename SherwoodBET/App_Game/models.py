@@ -119,7 +119,7 @@ class UserTicketManager(models.Manager):
         user_tickets = self.filter(user_obj=user)
         if "status" in params:
             user_tickets = user_tickets.filter(race_ticket_obj__collection_obj__status=params['status'])
-        if "is_professional" in status:
+        if "is_professional" in params:
             user_tickets = user_tickets.filter(race_ticket_obj__is_professional=params['is_professional'])
         if "bet_amount" in params:
             user_tickets = user_tickets.filter(race_ticket_obj__bet_amount=params['bet_amount'])

@@ -57,8 +57,12 @@ class TestUser:
         bet = self.play(data)
         return self.client.post(reverse('place_bet'), json.dumps(bet), content_type='application/json')
 
-    def request_own_tickets(self):
-        pass
+    def filter_own_user_tickets(self, status=None, is_prof=None, amount=None, min=None, max=None, present=0):
+        params = "?present=" + str(present)
+        return params
+
+    def request_own_tickets(self, params):
+        return self.client.get('/game/api/get_user_ticket_results' + params)
 
     def request_own_ticket(self):
         pass

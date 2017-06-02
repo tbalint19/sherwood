@@ -46,6 +46,8 @@ class UserTicketsRequest:
 
     def get_from_request(self, request):
         try:
+            request.params = {}
+            request.params["present"] = int(request.GET.get("present"))
             return request
         except:
             return None

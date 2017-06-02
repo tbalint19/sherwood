@@ -104,6 +104,9 @@ class TestStory(TestCase):
         cls.all_bets_1 = list(Bet.objects.all())
         cls.all_game_money_user_tickets = list(UserTicket.objects.filter(race_ticket_obj__is_professional=False))
 
+        params = player_1.filter_own_user_tickets()
+        cls.results_response_1 = player_1.request_own_tickets(params)
+
     def setUp(self):
         self.maxDiff = None
 
@@ -448,3 +451,22 @@ class TestStory(TestCase):
         user_ticket = all_game_money_user_tickets[0]
         self.assertEqual(len(all_game_money_user_tickets), 1)
         self.assertTrue(user_ticket.paid)
+
+    def test_user_receives_user_tickets_without_params(self):
+        response = self.__class__.results_response_1
+        self.assertEqual(response.status_code, 200)
+
+    def test_received_user_tickets_exist(self):
+        response = self.__class__.results_response_1
+        self.assertTrue("user_tickets" in json.loads(response.content.decode('utf-8')))
+
+    def test_received_user_tickets_contains_one(self):
+        response = self.__class__.results_response_1
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(data["user_tickets"]), 1)
+
+    def test_received_user_tickets_contains_relevant_data(self):
+        response = self.__class__.results_response_1
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertTrue("user_ticket" in data["user_tickets"][0] and
+            "related_race_ticket" in data["user_tickets"][0])
