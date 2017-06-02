@@ -11,6 +11,7 @@ class TestStory(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        # initial offer created
         data = TestData()
         data.create_teams();                    cls.set_up_1 = list(Team.objects.all())
         data.create_events();                   cls.set_up_2 = list(Event.objects.all())
@@ -19,9 +20,10 @@ class TestStory(TestCase):
         data.create_derby_events();             cls.set_up_5 = list(MatchEvent.objects.all())
         data.create_collections();              cls.set_up_6 = list(Collection.objects.all())
         data.add_matches_to_collection();       cls.set_up_7 = list(MatchEventOfCollection.objects.all())
-        data.add_events_to_collection();       cls.set_up_8 = list(MatchEventOfCollection.objects.all())
+        data.add_events_to_collection();        cls.set_up_8 = list(MatchEventOfCollection.objects.all())
         data.create_race_tickets();             cls.set_up_9 = list(RaceTicket.objects.all())
 
+        # user attemps signup, login logout - with and without confirm, invitation
         player_1 = TestUser()
         login_data = player_1.create_login_data('Bela12', '123456Ab');
         cls.response_1 = player_1.request_login(login_data)
@@ -82,19 +84,21 @@ class TestStory(TestCase):
         profile = Profile.objects.get(user_obj__username='Kazmer12')
         cls.status_8 = profile.is_confirmed
 
+        # the user plays
         cls.response_16 = player_1.request_offer()
-
         cls.status_9 = UserTicket.objects.all().exists()
-
         offer = json.loads(cls.response_16.content.decode('utf-8'))
+
         race_ticket_id = player_1.choose_matches_ticket(offer, "matches_offer", False, 100)
         cls.response_17 = player_1.request_user_ticket(race_ticket_id)
-
-        cls.status_10 = UserTicket.objects.all().exists()
-
+        cls.status_10 = list(UserTicket.objects.all())
         cls.response_18 = player_1.request_user_ticket(race_ticket_id)
-
         cls.status_11 = list(UserTicket.objects.all())
+
+        cls.action_1 = player_1.play(json.loads(cls.response_18.content.decode('utf-8')))
+        cls.response_19 = player_1.request_bet(cls.action_1)
+        cls.status_12 = list(Bet.objects.all())
+        cls.status_13 = list(UserTicket.objects.filter(race_ticket_obj__is_professional=False))
 
     def setUp(self):
         self.maxDiff = None
@@ -401,7 +405,7 @@ class TestStory(TestCase):
 
     def test_user_ticket_exists(self):
         status = self.__class__.status_10
-        self.assertTrue(status)
+        self.assertEqual(len(status), 1)
 
     def test_choosing_first_existing_user_ticket_response_arrives(self):
         response = self.__class__.response_18
@@ -410,3 +414,28 @@ class TestStory(TestCase):
     def test_user_ticket_not_recreated(self):
         status = self.__class__.status_11
         self.assertEqual(len(status), 1)
+        self.assertFalse(status[0].paid)
+
+    def test_user_played_bets(self):
+        action = self.__class__.action_1
+        bet = action["related_bets"][0]["bet_data"]
+        self.assertEqual(bet["home"] + bet["draw"] + bet["away"], 100)
+
+    def test_bet_response_arrives(self):
+        response = self.__class__.response_19
+        self.assertEqual(response.status_code, 200)
+
+    def test_7_bets_after_fill(self):
+        status = self.__class__.status_12
+        self.assertEqual(len(status), 7)
+
+    def test_7_bets_filled_after_fill(self):
+        status = self.__class__.status_12
+        bets = [bet.home + bet.draw + bet.away for bet in status]
+        self.assertEqual(bets, [100, 100, 100, 100, 100, 100, 100])
+
+    def test_user_ticket_paid_after_placed_bets(self):
+        status = self.__class__.status_13
+        user_ticket = status[0]
+        self.assertEqual(len(status), 1)
+        self.assertTrue(user_ticket.paid)

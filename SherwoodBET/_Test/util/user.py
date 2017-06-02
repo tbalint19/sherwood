@@ -44,19 +44,18 @@ class TestUser:
         return self.client.get('/game/api/get_ticket?race_ticket_id=' + str(race_ticket_id))
 
     def play(self, game_data):
-        choices = [
-            [80, 10, 10], [70, 20, 10], [40, 30, 30]
-            [60, 30, 10], [50, 30, 20], [90, 10, 0]]
         for bet in game_data["related_bets"]:
-            c = random.choice(choices)
-            bet["bet_data"]["home"] = c[0]
-            bet["bet_data"]["draw"] = c[1]
-            bet["bet_data"]["away"] = c[2]
+            avg_70 = random.randint(40, 100)
+            avg_15_1 = random.randint(0, 100 - avg_70)
+            avg_15_2 = 100 - avg_70 - avg_15_1
+            bet["bet_data"]["home"] = avg_15_1
+            bet["bet_data"]["draw"] = avg_15_2
+            bet["bet_data"]["away"] = avg_70
         return game_data
 
     def request_bet(self, data):
         bet = self.play(data)
-        return self.client.post(reverse('place_bet'), bet, content_type='application/json')
+        return self.client.post(reverse('place_bet'), json.dumps(bet), content_type='application/json')
 
     def request_own_tickets(self):
         pass

@@ -1,4 +1,5 @@
-from App_Game.models import RaceTicket
+from App_Game.models import RaceTicket, UserTicket, Bet
+import json
 
 class OfferRequest:
 
@@ -11,7 +12,7 @@ class OfferRequest:
         except:
             return None
 
-class TicketRequest:
+class RaceTicketRequest:
 
     auth_status = "user"
     request_method = "GET"
@@ -30,10 +31,10 @@ class BetRequest:
 
     def get_from_request(self, request):
         try:
-            game_data = json.loads(request.body.decode("utf-8"))
+            game_data = json.loads(request.body.decode('utf-8'))
             request.user_ticket = UserTicket.objects.get(id=game_data["user_ticket"]["id"])
             request.bets = [Bet.objects.get(id=bet["bet_data"]["id"]) for bet in game_data["related_bets"]]
-            request.bet_data = game_data["related_bets"]["bet_data"]
+            request.bet_data = [bet["bet_data"] for bet in game_data["related_bets"]]
             return request
         except:
             return None

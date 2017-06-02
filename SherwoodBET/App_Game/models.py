@@ -127,11 +127,9 @@ class UserTicketManager(models.Manager):
             user_tickets = user_tickets.filter(payoff__gte=params['min_payoff'])
         if "max_payoff" in params:
             user_tickets = user_tickets.filter(payoff__lte=params['max_payoff'])
-        if len(user_tickets[params['present']:]) > 12:
-            return user_tickets[params['present']:][:12]
         return [
             {"user_ticket": user_ticket, "related_race_ticket": user_ticket.race_ticket_obj}
-            for user_ticket in user_tickets[params['present']:]]
+            for user_ticket in user_tickets[params['present']:][:12]]
 
 
 class UserTicket(models.Model):

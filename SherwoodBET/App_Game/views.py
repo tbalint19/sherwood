@@ -1,4 +1,4 @@
-from App_Game.requests import OfferRequest, TicketRequest, BetRequest, UserTicketsRequest, UserTicketRequest
+from App_Game.requests import OfferRequest, RaceTicketRequest, BetRequest, UserTicketsRequest, UserTicketRequest
 from App_Game.models import Collection, UserTicket
 from _Middleware import API
 
@@ -11,7 +11,7 @@ def get_offer(request):
         "played_race_tickets": UserTicket.objects.get_played_race_tickets(request.user)}
 
 
-@API.endpoint(TicketRequest)
+@API.endpoint(RaceTicketRequest)
 def get_ticket(request):
     user_ticket = UserTicket.objects.get_or_create_user_ticket(request.user, request.race_ticket)
     if not user_ticket.paid and not request.user.account.has_sufficient_funds(race_ticket=request.race_ticket):
@@ -20,7 +20,7 @@ def get_ticket(request):
         "user_ticket": user_ticket,
         "related_bets": user_ticket.get_or_create_related_bets()}
 
-        
+
 @API.endpoint(BetRequest)
 def place_bet(request):
     request.user.account.pay_user_ticket_if_needed_and_possible(request.user_ticket)

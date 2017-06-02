@@ -74,15 +74,15 @@ class Account(models.Model):
 
     def pay_user_ticket_if_needed_and_possible(self, user_ticket):
         if not user_ticket.paid:
-            is_possible = self.has_sufficient_funds(user_ticket.race_ticket)
+            is_possible = self.has_sufficient_funds(user_ticket.race_ticket_obj)
             if is_possible:
                 self.pay_user_ticket(user_ticket)
 
     def pay_user_ticket(self, user_ticket):
-        if user_ticket.race_ticket.is_professional:
-            self.real_money -= user_ticket.race_ticket.bet_amount
+        if user_ticket.race_ticket_obj.is_professional:
+            self.real_money -= user_ticket.race_ticket_obj.bet_amount
         else:
-            self.game_money -= user_ticket.race_ticket.bet_amount
+            self.game_money -= user_ticket.race_ticket_obj.bet_amount
         user_ticket.paid = True
         self.save()
         user_ticket.save()
