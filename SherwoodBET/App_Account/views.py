@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from App_Account.requests import AccountRequest
+from App_Account.models import Account
+from _Middleware import API
 
-# Create your views here.
+@API.endpoint(AccountRequest)
+def get_account_data(request):
+    return {'account': request.user.account}

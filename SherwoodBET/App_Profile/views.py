@@ -1,5 +1,5 @@
 from App_Profile.requests import SignupRequest, LoginRequest, LogoutRequest, EmailAuthRequest, ProfileRequest
-from App_Profile.models import Profile, Account
+from App_Profile.models import Profile
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from _Middleware import API
@@ -32,6 +32,7 @@ def logout_user(request):
 def confirm_user(request):
     return {
         'is_successful': Profile.objects.confirm_user(request.confirmation_code, request.username)}
+
 
 @API.endpoint(ProfileRequest)
 def get_profile_data(request):

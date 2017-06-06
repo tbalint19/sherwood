@@ -34,6 +34,9 @@ class TestUser:
     def request_profile_data(self):
         return self.client.get(reverse('get_profile_data'))
 
+    def request_account_data(self):
+        return self.client.get(reverse('get_account_data'))
+
     def request_offer(self):
         return self.client.get(reverse('get_offer'))
 
