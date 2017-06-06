@@ -19,3 +19,7 @@ class TestConfirm(TestCase):
 
     def test_user_receives_respone(self):
         self.assertEqual(self.__class__.response.status_code, 200)
+
+    def test_respone_contains_relevant_data(self):
+        response_data = json.loads(self.__class__.response.content.decode('utf-8'))
+        self.assertEqual(response_data['profile']['user'], "Bela12")
