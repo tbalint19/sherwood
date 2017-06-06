@@ -34,4 +34,10 @@ class Recipe(models.Model):
 
     user_obj = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    is_real_money = model.BooleanField()
+    is_real_money = models.BooleanField()
+
+
+class Donation(models.Model):
+
+    user_obj = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.IntegerField()

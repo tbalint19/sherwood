@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, AnonymousUser
-# from App_Community import PrivateRace
+from App_Community.models import PrivateRace
 
 class Team(models.Model):
 
@@ -85,10 +85,10 @@ class Collection(models.Model):
             self.status = Collection.FINISHED
             self.save()
 
-# class CollectionOfPrivateRace(models.Model):
-#
-#     collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE)
-#     group_obj = models.ForeignKey(PrivateRace, on_delete=models.CASCADE)
+class CollectionOfPrivateRace(models.Model):
+
+    collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    group_obj = models.ForeignKey(PrivateRace, on_delete=models.CASCADE)
 
 class MatchEventOfCollection(models.Model):
 

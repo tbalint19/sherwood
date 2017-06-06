@@ -1,7 +1,7 @@
 from django.test import Client
 from django.urls import reverse
 from App_Profile.models import Profile
-from App_Profile.views import signup_user, login_user, logout_user
+from App_Profile.views import signup_user, login_user, logout_user, get_profile_data
 import random
 import json
 
@@ -30,6 +30,9 @@ class TestUser:
 
     def request_logout(self):
         return self.client.get(reverse('logout_user'))
+
+    def request_profile_data(self):
+        return self.client.get(reverse('get_profile_data'))
 
     def request_offer(self):
         return self.client.get(reverse('get_offer'))

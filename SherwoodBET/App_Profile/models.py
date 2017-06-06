@@ -2,6 +2,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db import models
 from App_Account.models import Account
+from App_Game.models import Team, Event
+import random
+import string
 
 class ProfileManager(models.Manager):
 
