@@ -110,6 +110,17 @@ class RaceTicket(models.Model):
 
 class UserTicketManager(models.Manager):
 
+    def get_numbers_for_user(self, user):
+        public = self.filter(user_obj=user, race_ticket_obj__collection_obj__is_public=True)
+        private = self.filter(user_obj=user, race_ticket_obj__collection_obj__is_public=False)
+        return {
+            'upcoming': public.filter(race_ticket_obj__collection_obj__status=Collection.PLAYABLE).count(),
+            'live': public.filter(race_ticket_obj__collection_obj__status=Collection.LIVE).count(),
+            'won': public.filter(paid=True, payoff__gte=1).count(),
+            'lost': public.filter(paid=True, payoff__lt=1).count(),
+            'private': private.count(),
+            'trophies': private.filter(rank=1).count()}
+
     def get_played_race_tickets(self, user):
         return [
             user_ticket.race_ticket_obj

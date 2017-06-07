@@ -1,12 +1,12 @@
-from django.http import JsonResponse
 from _Serializer.serializer import Serializer as S
+from django.http import JsonResponse
 import json
 
 class API:
 
     @classmethod
     def endpoint(cls, Expected):
-        def set_up(view):
+        def decorate(view):
             def form_response(request):
                 if request.method != Expected.request_method:
                     return JsonResponse({}, status=404)
@@ -17,7 +17,7 @@ class API:
                     return JsonResponse({}, status=401)
                 return JsonResponse(S.serialize(view(request)))
             return form_response
-        return set_up
+        return decorate
 
     @staticmethod
     def is_authenticated(request, auth_status):

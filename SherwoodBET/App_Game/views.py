@@ -1,5 +1,5 @@
-from App_Game.requests import OfferRequest, RaceTicketRequest, BetRequest, UserTicketsRequest, UserTicketRequest
-from App_Game.models import Collection, UserTicket
+from App_Game.requests import *
+from App_Game.models import *
 from _Middleware import API
 
 
@@ -44,3 +44,8 @@ def get_user_ticket_result(request):
         "user_ticket": request.user_ticket,
         "related_race_ticket": request.user_ticket.race_ticket,
         "related_bets": request.user_ticket.get_bet_results()}
+
+
+@API.endpoint(ArchiveNumbersRequest)
+def get_archive_numbers(request):
+    return {'archive_numbers': UserTicket.objects.get_numbers_for_user(request.user)}

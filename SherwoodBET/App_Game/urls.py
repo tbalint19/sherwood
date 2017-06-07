@@ -15,4 +15,7 @@ urlpatterns = [
     url(r'^api/get_user_ticket_results', views.get_user_ticket_results, name='get_user_ticket_results'),
     # url(r'^api/get_ticket', views.get_ticket, name='get_ticket'),
 
+    # numbers for homepage
+    url(r'^api/get_archive_numbers', views.get_archive_numbers, name='get_archive_numbers'),    
+
 ]

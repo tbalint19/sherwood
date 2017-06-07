@@ -4,7 +4,7 @@ from App_Profile.models import *
 import json
 
 @tag('story', 'profile_data')
-class TestConfirm(TestCase):
+class TestProfileData(TestCase):
 
     @classmethod
     def setUpTestData(cls):
