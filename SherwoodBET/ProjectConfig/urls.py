@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^profile/', include('App_Profile.urls')),
     url(r'^account/', include('App_Account.urls')),
     url(r'^game/', include('App_Game.urls')),
+    url(r'^community/', include('App_Community.urls')),
     url(r'^', include('App_Wall.urls')),
 ]

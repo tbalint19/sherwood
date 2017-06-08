@@ -40,8 +40,11 @@ class TestUser:
     def request_archive_numbers(self):
         return self.client.get(reverse('get_archive_numbers'))
 
-    def request_offer(self):
-        return self.client.get(reverse('get_offer'))
+    def request_public_offer(self):
+        return self.client.get(reverse('get_public_offer'))
+
+    def request_private_offer(self):
+        return self.client.get(reverse('get_private_offer'))
 
     def choose_matches_ticket(self, offer, offer_type, is_professional, bet_amount):
         race_tickets = offer[offer_type][0]["race_tickets"]

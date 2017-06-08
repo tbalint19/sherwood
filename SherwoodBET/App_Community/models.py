@@ -1,15 +1,38 @@
 from django.db import models
 from django.contrib.auth.models import User, AnonymousUser
+from App_Game.models import Collection
 
-class PrivateRace(models.Model):
+class Championship(models.Model):
 
     name = models.CharField(max_length=30)
     number_of_rounds = models.IntegerField()
+    current_season = models.IntegerField(default=1)
 
-class MemberShip(models.Model):
+    def get_current_round(self):
+        season_obj = self.seasons.get(number=self.current_season)
+        round_obj = season_obj.rounds.get(number=season_obj.current_round)
+        collection_obj = round_obj.collection_obj
+        race_ticket_obj = collection_obj.race_ticket_obj
+        return {'collection': collection_obj, 'race_ticket': race_ticket_obj}
 
-    private_race_obj = models.ForeignKey(PrivateRace, on_delete=models.CASCADE)
-    user_obj = models.ForeignKey(User, on_delete=models.CASCADE, related_name="competitors")
+
+class Season(models.Model):
+
+    chamionship_obj = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name="seasons")
+    champion_obj = models.ForeignKey(User, on_delete=models.CASCADE)
+    number = models.IntegerField()
+    current_round = models.IntegerField(default=1)
+
+class Round(models.Model):
+
+    season_obj = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="rounds")
+    collection_obj = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    number = models.IntegerField()
+
+class Competitor(models.Model):
+
+    chamionship_obj = models.ForeignKey(Championship, on_delete=models.CASCADE, related_name="competitors")
+    user_obj = models.ForeignKey(User, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
     rank = models.IntegerField(null=True, default=None)
