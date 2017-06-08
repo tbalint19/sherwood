@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^account/', include('App_Account.urls')),
     url(r'^game/', include('App_Game.urls')),
     url(r'^community/', include('App_Community.urls')),
-    url(r'^', include('App_Wall.urls')),
+    url(r'^wall', include('App_Wall.urls')),
+    url(r'^', include('Static.urls')),
 ]
