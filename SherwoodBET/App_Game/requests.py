@@ -37,7 +37,7 @@ class BetRequest:
             request.bet_data = [bet["bet_data"] for bet in game_data["related_bets"]]
             return request
         except:
-            return None
+            return None        
 
 class UserTicketsRequest:
 

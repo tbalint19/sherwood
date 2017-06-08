@@ -48,4 +48,5 @@ def get_user_ticket_result(request):
 
 @API.endpoint(ArchiveNumbersRequest)
 def get_archive_numbers(request):
-    return {'archive_numbers': UserTicket.objects.get_numbers_for_user(request.user)}
+    return {
+        'archive_numbers': UserTicket.objects.get_numbers_for_user(request.user)}
