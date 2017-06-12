@@ -1,0 +1,15 @@
+input {
+  outline: 0;
+  border: 2px solid gold;
+  border-radius: 5px;
+  color: green;
+  padding: 7px;
+  font-family: 'Montserrat', cursive;
+}
+
+input:focus {
+  box-shadow: 0 0 20px gold;
+}
+input:active {
+
+}
