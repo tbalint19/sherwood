@@ -1,0 +1,152 @@
+.wall-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: beige;
+  z-index: 2;
+  display: flex;
+}
+
+.wall-navbar-logo {
+  margin: 10px;
+  padding: 10px;
+  font-family: 'Bangers', cursive;
+  color: gold;
+  font-size: 2em;
+}
+
+#bet {
+  color: green;
+}
+
+.wall-navbar-button-container {
+  margin: 20px;
+  margin-left: 100px;
+}
+
+@media screen and (max-width: 1366px) {
+    .wall-navbar-button-container {
+        margin-left: 120px;
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    .wall-navbar-button-container {
+        margin-left: 90px;
+    }
+}
+
+@media screen and (max-width: 1250px) {
+    .wall-navbar-button-container {
+        margin-left: 70px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .wall-navbar-button-container {
+        margin-left: 50px;
+    }
+}
+
+@media screen and (max-width: 1160px) {
+    .wall-navbar-button-container {
+        margin-left: 30px;
+    }
+}
+
+@media screen and (max-width: 1120px) {
+    .wall-navbar-button-container {
+        margin-left: 10px;
+    }
+}
+
+@media screen and (max-width: 1080px) {
+    .wall-navbar-button-container {
+        margin-left: 80px;
+    }
+}
+
+@media screen and (max-width: 1040px) {
+    .wall-navbar-button-container {
+        margin-left: 60px;
+    }
+}
+
+@media screen and (max-width: 1004px) {
+    .wall-navbar-button-container {
+        margin-left: 40px;
+    }
+}
+
+.navbar-button {
+  margin: 0 7px;
+  width: 77px;
+}
+
+.navbar-user-details-container {
+  border: 1px solid green;
+  border-radius: 3px;
+  text-align: center;
+  margin: 20px;
+  background-color: gold;
+  width: 325px;
+}
+
+@media screen and (max-width: 1366px) {
+    .navbar-user-details-container {
+        margin-left: 140px;
+    }
+}
+
+@media screen and (max-width: 1250px) {
+    .navbar-user-details-container {
+        margin-left: 120px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .navbar-user-details-container {
+        margin-left: 100px;
+    }
+}
+
+@media screen and (max-width: 1160px) {
+    .navbar-user-details-container {
+        margin-left: 80px;
+    }
+}
+
+@media screen and (max-width: 1120px) {
+    .navbar-user-details-container {
+        margin-left: 60px;
+    }
+}
+
+@media screen and (max-width: 1080px) {
+    .navbar-user-details-container {
+        margin-left: 40px;
+    }
+}
+
+@media screen and (max-width: 1040px) {
+    .navbar-user-details-container {
+        margin-left: 20px;
+    }
+}
+
+@media screen and (max-width: 1004px) {
+    .navbar-user-details-container {
+        margin-left: 10px;
+    }
+}
+
+.navbar-user-details {
+  font-family: 'Montserrat', cursive;
+  font-size: 0.8em;
+  margin: 10px;
+}
+
+.navbar-user-detail {
+  margin: 10px;
+}
