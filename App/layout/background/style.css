@@ -10,19 +10,18 @@ body {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #5cb85c;
-  opacity: 0.4;
+  background: url("/static/Images/forest.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .home-background::after {
-  opacity: 0.50;
+  background-color: forestgreen;
+  opacity: 0.6;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   content: "";
   position: absolute;
-  background: url("/static/Images/forest.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
 }

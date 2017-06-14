@@ -1,0 +1,7 @@
+.wall-app {
+  position: absolute;
+  text-align: center;
+  z-index: 10;
+  top: 5vh;
+  width: 100%;
+}

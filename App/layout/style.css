@@ -1,2 +1,19 @@
 @import "./background/style.css";
 @import "./navbar/style.css";
+@import "./wall/style.css";
+
+.app p {
+  font-family: 'Montserrat', cursive;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.app h1 {
+  font-family: 'Bangers', cursive;
+  font-size: 24px;
+}
+
+.app button {
+  font-family: 'Montserrat', cursive;
+  font-size: 12px;
+}

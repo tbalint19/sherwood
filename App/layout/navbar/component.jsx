@@ -7,11 +7,12 @@ class Navbar extends Container{
       <div className={"wall-navbar"}>
         <NavBarLogo/>
         <div className={"wall-navbar-button-container"}>
-          <NavBarButton name={"Tutorial"} action={()=>{}}/>
-          <NavBarButton name={"Why u"} action={()=>{}}/>
-          <NavBarButton name={"Calculator"} action={()=>{}}/>
-          <NavBarButton name={"Reset"} action={()=>{}}/>
-          <NavBarButton name={"New ticket"} action={()=>{}}/>
+          <NavbarButton action={()=>{}} name={"TBalint19"} icon={"account_box"}/>
+          <NavbarButton action={()=>{}} name={"719.9$"} icon={"credit_card"}/>
+          <NavbarButton action={()=>{}} name={"Professional"} icon={"trending_up"}/>
+          <NavbarButton action={()=>{}} name={"Groups"} icon={"group"}/>
+          <NavbarButton action={()=>{}} name={"Help"} icon={"live_help"}/>
+          <NavbarButton action={()=>{}} name={"Logout"} icon={"power_settings_new"}/>
         </div>
       </div>
     )
@@ -21,12 +22,19 @@ class Navbar extends Container{
 export default Navbar
 
 const NavBarLogo = (props) => (
-  <p className={"wall-navbar-logo"}>Sherwood<span id={"bet"}>BET</span></p>
+  <div>
+    <h1 className={"wall-navbar-logo"}>
+      <span id={"logo-sherwood"}>Sherwood</span>
+      <span id={"logo-bet"}>BET</span>
+    </h1>
+  </div>
 )
 
-const NavBarButton = (props) => (
+const NavbarButton = (props) => (
   <button
-    className={"sherwood-button navbar-button"}
-    onClick={props.action}>{props.name}
+    className={"navbar-button"}
+    onClick={props.action}>
+    <i className="material-icons md-12 icon-align">{props.icon}</i>
+    {props.name}
   </button>
 )

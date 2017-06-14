@@ -4,9 +4,9 @@ import ViewDependencies from 'viewDependencies'
 
 import Background from './background/component'
 import NavBar from './navbar/component'
+import Wall from './wall/app'
 
 // import Login from './apps/login/component'
-// import Wall from './apps/wall/component'
 // import Game from './apps/game/component'
 // import Archive from './apps/archive/component'
 // import Community from './apps/community/component'
@@ -23,16 +23,16 @@ class View extends React.Component{
     let data = this.props.model.data
     let state = this.props.model.state
     return(
-      <div>
+      <div className="app">
         <ViewDependencies/>
 
         <Background/>
         <NavBar/>
 
         {/* App */}
-        {/* {state.app == "login" && <Login data={data} state={state} controller={controller}/>}
+        {/* {state.app == "login" && <Login data={data} state={state} controller={controller}/>} */}
         {state.app == "wall" && <Wall data={data} state={state} controller={controller}/>}
-        {state.app == "game" && <Game data={data} state={state} controller={controller}/>}
+        {/* {state.app == "game" && <Game data={data} state={state} controller={controller}/>}
         {state.app == "archive" && <Archive data={data} state={state} controller={controller}/>}
         {state.app == "community" && <Commmunity data={data} state={state} controller={controller}/>}
         {state.app == "admin" && <Admin data={data} state={state} controller={controller}/>} */}

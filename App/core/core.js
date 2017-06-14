@@ -10,7 +10,7 @@ import {
 const core = (() => {
 
   const initialState = Object.assign({}, stateTree)
-
+  
   const reducer = (current = initialState, action) => {
     switch (action.type) {
       case "SOMETHING_HAPPENED":

@@ -1,7 +1,7 @@
-export const stateTree = {
+const stateTree = {
 
   state: {
-    app: 'home',
+    app: 'wall',
     modal: null,
     inTransition: false,
   },
@@ -13,3 +13,5 @@ export const stateTree = {
   }
 
 }
+
+export default stateTree
